@@ -1,0 +1,4 @@
+name: AooniJinrou
+version: '1.0-SNAPSHOT'
+main: me.rooyrooy.aooniJinrou.AooniJinrou
+api-version: '1.19'
