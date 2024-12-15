@@ -1,0 +1,10 @@
+AooniJinrou:
+  Setting:
+    Job:
+      aooni: 3
+      hunter: 1
+      mika: 1
+      takeshi: 1
+      takurou: 1
+    Game:
+      Time: 1200

@@ -1,0 +1,15 @@
+name: AooniJinrou
+version: '1.0-SNAPSHOT'
+main: me.rooyrooy.aooniJinrou.AooniJinrou
+api-version: '1.19'
+commands:
+  aoonijinrou-start:
+    usage: <command>
+  aoonijinrou-setting:
+    usage: <command>
+  aoonijinrou-job-give:
+    usage: <command>
+  aoonijinrou-setting-chest-place:
+    usage: <command> <Floor階数>
+  aoonijinrou-setting-chest-check:
+    usage: <command> <true/false>チェスト設置場所の発光のON/OFF
