@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.EnderChest
 import org.bukkit.entity.AreaEffectCloud
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -28,7 +29,17 @@ class ChestOpen : Listener {
 
         val blockEnderChest = location.world.getBlockAt(location)
         val blockloc = blockEnderChest.location
-
+        //ちぇすとのいちのアーマースタンドの情報取得
+        val world: World = blockloc.world
+        val nearbyEntities = world.entities
+        var floor = 0
+        for (entity in nearbyEntities) {
+            if (entity is ArmorStand && entity.location.distance(blockloc) <= 2) {
+                var name = entity.name
+                player.sendMessage(name)
+                floor = name.replace("Floor","").toInt()//ちぇすとの階層
+            }
+        }
         if (chestOpened.contains("${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}")){
             val chestItem = ItemStack(Material.STRUCTURE_VOID)
             val chestItemMeta = chestItem.itemMeta
@@ -38,17 +49,32 @@ class ChestOpen : Listener {
 
             //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
         }else{
-            val chestItem = ItemStack(Material.OAK_BUTTON)  //これは1~4階のチェストだった場合
-            val chestItemMeta = chestItem.itemMeta
-            chestItemMeta.displayName(Component.text("§e§l鍵の欠片"))
-            val currentLore = chestItemMeta.lore ?: mutableListOf()
-            // 新しい lore を追加
-            currentLore.add("§7本館1階～4階のチェストの鍵の欠片を")
-            currentLore.add("§7すべて集めると、§9地下室の鍵§e（木の感圧版）§7に！")
-            chestItemMeta.lore =  currentLore
-            chestItem.itemMeta = chestItemMeta
-            player.enderChest.setItem(13, chestItem)
-            //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
+            if(floor in 1..4) { //1~4階層
+
+                val chestItem = ItemStack(Material.OAK_BUTTON)  //これは1~4階のチェストだった場合
+                val chestItemMeta = chestItem.itemMeta
+                chestItemMeta.displayName(Component.text("§e§l地下の鍵の欠片"))
+                val currentLore = chestItemMeta.lore ?: mutableListOf()
+                // 新しい lore を追加
+                currentLore.add("§7本館1階～4階のチェストの鍵の欠片を")
+                currentLore.add("§7すべて集めると、§9地下室の鍵§e（木の感圧版）§7に！")
+                chestItemMeta.lore = currentLore
+                chestItem.itemMeta = chestItemMeta
+                player.enderChest.setItem(13, chestItem)
+                //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
+            }else if(floor == -1){
+                val chestItem = ItemStack(Material.BLUE_CARPET)  //これは1~4階のチェストだった場合
+                val chestItemMeta = chestItem.itemMeta
+                chestItemMeta.displayName(Component.text("§9§l5階の鍵の欠片"))
+                val currentLore = chestItemMeta.lore ?: mutableListOf()
+                // 新しい lore を追加
+                currentLore.add("§7本館地下1階のチェストの鍵の欠片を")
+                currentLore.add("§7すべて集めると、§95階への鍵§e（青羊毛）§7に！")
+                chestItemMeta.lore = currentLore
+                chestItem.itemMeta = chestItemMeta
+                player.enderChest.setItem(13, chestItem)
+                //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
+            }
         }
 
 

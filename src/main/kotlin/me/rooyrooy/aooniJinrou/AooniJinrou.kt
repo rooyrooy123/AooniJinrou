@@ -1,6 +1,7 @@
 package me.rooyrooy.aooniJinrou
 
 import me.rooyrooy.aooniJinrou.Chest.ChestOpen
+import me.rooyrooy.aooniJinrou.Chest.ChestPlace
 import me.rooyrooy.aooniJinrou.Job.JobGive
 import me.rooyrooy.aooniJinrou.Setting.SettingChest
 import me.rooyrooy.aooniJinrou.Setting.SettingGui
@@ -40,6 +41,10 @@ class AooniJinrou : JavaPlugin() {
         server.pluginManager.registerEvents(ChestOpen(), this)
     }
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String> ): Boolean {
+        if (cmd.name.equals("aoonijinrou-chest-place-all", ignoreCase = true)){ // #/shop items
+            ChestPlace().placeAll()
+            return true
+        }
         if (cmd.name.equals("aoonijinrou-setting", ignoreCase = true)){ // #/shop items
             val player = Bukkit.getPlayer(sender.name) ?: return false
             SettingGui(config).open(player)

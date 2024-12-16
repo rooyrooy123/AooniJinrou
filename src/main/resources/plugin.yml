@@ -13,3 +13,5 @@ commands:
     usage: <command> <Floor階数>
   aoonijinrou-setting-chest-check:
     usage: <command> <true/false>チェスト設置場所の発光のON/OFF
+  aoonijinrou-chest-place-all:
+    usage: <command>
