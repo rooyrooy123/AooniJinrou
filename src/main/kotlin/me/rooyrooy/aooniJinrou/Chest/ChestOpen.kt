@@ -84,6 +84,8 @@ class ChestOpen : Listener {
         // プレイヤーがエンダーチェストを開いているかと、エンダーチェストの中をクリックしたかの確認
         val inventory = event.inventory
         if (inventory.type != InventoryType.ENDER_CHEST) return
+        event.isCancelled = true
+
         // エンダーチェストの内のアイテムをクリックしたか確認
         if (event.clickedInventory!!.type != InventoryType.ENDER_CHEST) return
         val clickedItem = event.currentItem ?: return
@@ -94,7 +96,6 @@ class ChestOpen : Listener {
         val location = clicker.openInventory.topInventory.location ?: return
         val blockEnderChest = location.world.getBlockAt(location)
         val blockloc = blockEnderChest.location
-        event.isCancelled = true
         if (clickedItem.type == Material.OAK_BUTTON){ //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
             chestOpened.add("${clicker}.${blockloc.x}.${blockloc.y}.${blockloc.z}")
 
