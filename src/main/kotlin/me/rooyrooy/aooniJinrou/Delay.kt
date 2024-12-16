@@ -13,5 +13,5 @@ class TaskHandler {
 object PluginProvider {
     val plugin: org.bukkit.plugin.Plugin
         get() = Bukkit.getPluginManager().getPlugin("AooniJinrou")
-            ?: throw IllegalStateException("Plugin not found!")
+            ?: throw IllegalStateException("Plugin としてにんしきされなかった!")
 }
