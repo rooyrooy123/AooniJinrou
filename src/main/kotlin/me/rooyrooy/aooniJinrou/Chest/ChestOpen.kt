@@ -1,13 +1,11 @@
 package me.rooyrooy.aooniJinrou.Chest
 
-import com.sun.org.apache.xerces.internal.xs.StringList
 import me.rooyrooy.aooniJinrou.chestOpened
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
-import org.bukkit.block.EnderChest
 import org.bukkit.entity.AreaEffectCloud
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
@@ -35,7 +33,7 @@ class ChestOpen : Listener {
         var floor = 0
         for (entity in nearbyEntities) {
             if (entity is ArmorStand && entity.location.distance(blockloc) <= 2) {
-                var name = entity.name
+                val name = entity.name
                 player.sendMessage(name)
                 floor = name.replace("Floor","").toInt()//ちぇすとの階層
             }
