@@ -31,6 +31,7 @@ val jobitem = mapOf("aooni" to Material.BLUE_WOOL,
     "takurou" to Material.PINK_WOOL)
 
 var chestOpened : ArrayList<String> = arrayListOf()
+var chestequipment : MutableMap<String,Material> = mutableMapOf()
 var gameJobList : MutableMap<Player,String> = mutableMapOf()
 
 class AooniJinrou : JavaPlugin() {
@@ -45,6 +46,12 @@ class AooniJinrou : JavaPlugin() {
             ChestPlace().placeAll()
             return true
         }
+        if (cmd.name.equals("aoonijinrou-chest-place-floor", ignoreCase = true)){ // #/shop items
+            if (args.size != 1) return false
+            ChestPlace().place(args[0].toInt())
+            return true
+        }
+
         if (cmd.name.equals("aoonijinrou-setting", ignoreCase = true)){ // #/shop items
             val player = Bukkit.getPlayer(sender.name) ?: return false
             SettingGui(config).open(player)
