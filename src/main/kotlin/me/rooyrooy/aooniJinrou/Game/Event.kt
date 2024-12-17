@@ -4,6 +4,7 @@ package me.rooyrooy.aooniJinrou.Game
 import me.rooyrooy.aooniJinrou.gameJobList
 import me.rooyrooy.aooniJinrou.gameStart
 import me.rooyrooy.aooniJinrou.jobName
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -13,7 +14,12 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.inventory.ItemStack
 
 class Event() : Listener{
     @EventHandler
@@ -37,20 +43,22 @@ class Event() : Listener{
 
         if (gameStart){
             if (victim is Player) {
-                if (damager is Arrow) {
-                    val attacker = damager.shooter
-                    if (attacker is Player) { // attacker victimが人間かつ弓で攻撃された場合
-                        if (gameJobList[attacker] == "hunter"){ //狩人かの確認
-                            victim.health = 0.0
-                            return
+                if (gameJobList[victim] != "hunter") {
+                    if (damager is Arrow) {
+                        val attacker = damager.shooter
+                        if (attacker is Player) { // attacker victimが人間かつ弓で攻撃された場合
+                            if (gameJobList[attacker] == "hunter") { //狩人かの確認
+                                victim.health = 0.0
+                                return
+                            }
                         }
-                    }
-                }else if (damager is Player){
-                    val attacker = damager
-                    if (gameJobList[attacker] == "aooni"){ // 青鬼の攻撃だった場合
-                        if (attacker.equipment.helmet.type != Material.AIR ){
-                            victim.health = 0.0
-                            return
+                    } else if (damager is Player) {
+                        val attacker = damager
+                        if (gameJobList[attacker] == "aooni") { // 青鬼の攻撃だった場合
+                            if (attacker.equipment.helmet.type != Material.AIR) {
+                                victim.health = 0.0
+                                return
+                            }
                         }
                     }
                 }
@@ -70,13 +78,144 @@ class Event() : Listener{
             val victimJob = gameJobList[victim]
             if (gameJobList[attacker] == "hunter"){ //ハンターが殺した
                 Bukkit.broadcastMessage(
-                    "${jobName[victimJob]}${victim.name}§bは${jobName[attackerJob]}${attacker.name}§bに射抜かれた。")
+                    "${jobName[victimJob]}：${victim.name}§bは${jobName[attackerJob]}：${attacker.name}§bに射抜かれた。")
             }else if (gameJobList[attacker] == "aooni"){ //青鬼が殺した
                 Bukkit.broadcastMessage(
-                    "§c${victim.name}§bは§9§l青鬼§bに食べられた。")
+                    "§e「§c${victim.name}§e」§bは§9§l青鬼§bに食べられた。")
 
 
             }
         }
     }
+
+    @EventHandler //青鬼の杖
+    fun onPlayerInteract(event: PlayerMoveEvent) {
+        if (gameStart) {
+            val player = event.player
+
+            // 防具が揃っているか確認
+            if (hasFullDiamondArmor(player)) {
+                // 防具を1つずつ削除
+                removeDiamondArmor(player)
+
+                // ダイヤモンドを1個与える
+                val aooniStick = ItemStack(Material.DIAMOND)
+                val aooniStickMeta = aooniStick.itemMeta
+                aooniStickMeta.displayName(Component.text("§1§l§n青鬼の杖§b(右クリックで変身)"))
+                val currentLore = aooniStickMeta.lore ?: mutableListOf()
+                // 新しい lore を追加
+                currentLore.add("§7青鬼の姿に変身！")
+                currentLore.add("§c§n1回の変身につき、3人まで§7ひろしを食べることができます。")
+                currentLore.add("§4§n30秒経つか、杖をもう一度右クリックすると、変身が解けます。")
+                aooniStickMeta.lore = currentLore
+
+                aooniStick.itemMeta = aooniStickMeta
+                player.inventory.addItem(aooniStick)
+
+                // プレイヤーに通知
+                player.sendMessage("§1§l§n青鬼の杖を手に入れました！(右クリックで発動)")
+                player.sendMessage("§c§n1回の変身につき、3人まで§7ひろしを食べることができます。")
+                player.sendMessage("§4§n30秒経つか、杖をもう一度右クリックすると、変身が解けます。")
+            }
+        }
+    }
+
+    private fun hasFullDiamondArmor(player: Player): Boolean {
+        val inventory = player.inventory
+        val requiredArmor = listOf(
+            Material.DIAMOND_HELMET,
+            Material.DIAMOND_CHESTPLATE,
+            Material.DIAMOND_LEGGINGS,
+            Material.DIAMOND_BOOTS
+        )
+
+        // 防具が全て揃っているかを確認
+        return requiredArmor.all { armorType ->
+            inventory.any { item ->
+                item != null && item.type == armorType
+            }
+        }
+    }
+
+    private fun removeDiamondArmor(player: Player) {
+        val inventory = player.inventory
+        val requiredArmor = listOf(
+            Material.DIAMOND_HELMET,
+            Material.DIAMOND_CHESTPLATE,
+            Material.DIAMOND_LEGGINGS,
+            Material.DIAMOND_BOOTS
+        )
+
+        // 防具を1つずつ削除
+        requiredArmor.forEach { armorType ->
+            val itemToRemove = inventory.firstOrNull { item ->
+                item != null && item.type == armorType
+            }
+            if (itemToRemove != null) {
+                itemToRemove.amount -= 1 // スタックを減らす
+                if (itemToRemove.amount <= 0) {
+                    inventory.remove(itemToRemove) // スタックが0以下になったら削除
+                }
+            }
+        }
+    }
+
+    //こっからダイヤモンドの防具を装備できないようにする
+    @EventHandler
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        if (gameStart) {
+            val player = event.player
+            val item = event.item
+
+            // nullチェック
+            if (item == null || item.type == Material.AIR) return
+
+            // ダイヤモンド防具かどうかをチェック
+            if (isDiamondArmor(item.type)) {
+                // イベントをキャンセルして装備を防ぐ
+                event.isCancelled = true
+                player.sendMessage("§cこの防具は装備できません！§1青鬼の杖でのみ、変身可能！")
+            }
+        }
+    }
+    @EventHandler
+    fun onInventoryClick(event: InventoryClickEvent) {
+        if (gameStart) {
+            val clickedSlot = event.slot
+            var clickedItem = event.cursor // プレイヤーが持っているアイテム（クリック中のアイテム）
+            if (event.isShiftClick) {
+                clickedItem = event.currentItem
+                if (isDiamondArmor(clickedItem!!.type)) {
+                    event.isCancelled = true
+                    event.whoClicked.sendMessage("§cこの防具は装備できません！")
+                    return
+                }
+            }
+            // nullチェック
+            if (clickedItem == null || clickedItem.type == Material.AIR) return
+
+            // 防具スロットかどうかをチェック
+            if (isArmorSlot(event, clickedSlot)) {
+                // ダイヤモンド防具を装備できないようにする
+                if (isDiamondArmor(clickedItem.type)) {
+                    event.isCancelled = true
+                    event.whoClicked.sendMessage("§cこの防具は装備できません！")
+                }
+            }
+        }
+    }
+
+    private fun isArmorSlot(event: InventoryClickEvent, slot: Int): Boolean {
+        // プレイヤーの装備スロット（ヘルメット、チェストプレート、レギンス、ブーツ）
+        return event.slotType == InventoryType.SlotType.ARMOR
+    }
+
+    private fun isDiamondArmor(material: Material): Boolean {
+        // ダイヤモンド防具の種類をチェック
+        return material == Material.DIAMOND_HELMET ||
+                material == Material.DIAMOND_CHESTPLATE ||
+                material == Material.DIAMOND_LEGGINGS ||
+                material == Material.DIAMOND_BOOTS
+    }
+
 }

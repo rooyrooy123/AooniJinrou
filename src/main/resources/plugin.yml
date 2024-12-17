@@ -9,6 +9,8 @@ commands:
     usage: <command>
   aoonijinrou-job-give:
     usage: <command>
+  aoonijinrou-job-set:
+    usage: <command> <player> <job>
   aoonijinrou-setting-chest-place:
     usage: <command> <Floor階数>
   aoonijinrou-setting-chest-check:
