@@ -1,7 +1,8 @@
 package me.rooyrooy.aooniJinrou
 
-import me.rooyrooy.aooniJinrou.Chest.ChestOpen
+import me.rooyrooy.aooniJinrou.Chest.ChestEvent
 import me.rooyrooy.aooniJinrou.Chest.ChestPlace
+import me.rooyrooy.aooniJinrou.Game.Event
 import me.rooyrooy.aooniJinrou.Job.JobGive
 import me.rooyrooy.aooniJinrou.Setting.SettingChest
 import me.rooyrooy.aooniJinrou.Setting.SettingGui
@@ -29,9 +30,9 @@ val jobitem = mapOf("aooni" to Material.BLUE_WOOL,
     "mika" to Material.PURPLE_WOOL,
     "takeshi" to Material.YELLOW_WOOL,
     "takurou" to Material.PINK_WOOL)
-
+var gameStart : Boolean = false
 var chestOpened : ArrayList<String> = arrayListOf()
-var chestequipment : MutableMap<String,Material> = mutableMapOf()
+var chestEquipment : MutableMap<String,Material> = mutableMapOf()
 var gameJobList : MutableMap<Player,String> = mutableMapOf()
 
 class AooniJinrou : JavaPlugin() {
@@ -39,7 +40,8 @@ class AooniJinrou : JavaPlugin() {
     override fun onEnable() {
         // Plugin startup logic
         saveDefaultConfig()
-        server.pluginManager.registerEvents(ChestOpen(), this)
+        server.pluginManager.registerEvents(ChestEvent(), this)
+        server.pluginManager.registerEvents(Event(), this)
     }
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String> ): Boolean {
         if (cmd.name.equals("aoonijinrou-chest-place-all", ignoreCase = true)){ // #/shop items

@@ -1,6 +1,9 @@
 package me.rooyrooy.aooniJinrou.Chest
 
-import me.rooyrooy.aooniJinrou.*
+import me.rooyrooy.aooniJinrou.TaskHandler
+import me.rooyrooy.aooniJinrou.chestOpened
+import me.rooyrooy.aooniJinrou.chestEquipment
+import me.rooyrooy.aooniJinrou.gameJobList
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -16,11 +19,8 @@ import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.plugin.Plugin
-import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.scheduler.BukkitRunnable
 
-class ChestOpen : Listener {
+class ChestEvent : Listener {
     fun enderChestOpen(player: Player,inventory: Inventory){
         val location = player.enderChest.location ?: return
         player.enderChest.clear()
@@ -31,11 +31,9 @@ class ChestOpen : Listener {
         val world: World = blockloc.world
         val nearbyEntities = world.entities
         var floor = 0
-        for (entity in nearbyEntities) {
-            if (entity is ArmorStand && entity.location.distance(blockloc) <= 2) {
-                val name = entity.name
-                floor = name.replace("Floor","").toInt()//ちぇすとの階層
-            }
+        for (entity in nearbyEntities) if (entity is ArmorStand && entity.location.distance(blockloc) <= 2) {
+            val name = entity.name
+            floor = name.replace("Floor","").toInt()//ちぇすとの階層
         }
         if (chestOpened.contains("${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}")){
             val chestItem = ItemStack(Material.STRUCTURE_VOID)
@@ -75,7 +73,7 @@ class ChestOpen : Listener {
                 }
             }else{
                 if (aooniCanGet(blockloc) == true) {
-                    if (!chestequipment.containsKey("${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}")){
+                    if (!chestEquipment.containsKey("${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}")){
                         val equipments = arrayOf(
                             Material.DIAMOND_HELMET,
                             Material.DIAMOND_CHESTPLATE,
@@ -83,9 +81,9 @@ class ChestOpen : Listener {
                             Material.DIAMOND_BOOTS
                         )
                         val equipment = equipments.random()
-                        chestequipment["${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}"] = equipments.random()
+                        chestEquipment["${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}"] = equipments.random()
                     }
-                    val chestItem = ItemStack(chestequipment["${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}"]!!)
+                    val chestItem = ItemStack(chestEquipment["${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}"]!!)
                     val chestItemMeta = chestItem.itemMeta
                     chestItemMeta.displayName(Component.text("§9§l§n青鬼装備の欠片"))
                     val currentLore = chestItemMeta.lore ?: mutableListOf()
@@ -156,17 +154,17 @@ class ChestOpen : Listener {
         clicker.inventory.addItem(clickedItem)
         clicker.enderChest.clear()
 
+
+        if (gameJobList[clicker] == "aooni") { //青鬼が装備とったら、もやもや発生
+            blockloc.y += 1
+            ChestParticle(blockloc).start()
+        }
         // 同じエンダーチェストを開いているすべてのプレイヤーを取得
         val players = Bukkit.getOnlinePlayers().filter { player ->
             player.openInventory.topInventory.location == location
         }
 
-        if (gameJobList[clicker] == "aooni") {
-            blockloc.y += 1
-            ChestParticle(blockloc).start()
-        }
-
-        //エンダーチェスト開いてる人一覧
+        //エンダーチェスト開いてる人一覧 青鬼ならちぇすとを更新させる
         val taskHandler = TaskHandler() // aooniCanGetの処理遅れで2個取れてしまうため、1TICKずらして実行
         taskHandler.executeWithDelay({
             players.forEach { openPlayer ->
