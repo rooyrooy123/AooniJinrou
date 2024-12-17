@@ -34,6 +34,7 @@ class Event() : Listener{
     fun onDamageByEntity(event: EntityDamageByEntityEvent){
         val damager = event.damager
         val victim = event.entity
+
         if (gameStart){
             if (victim is Player) {
                 if (damager is Arrow) {
@@ -41,10 +42,21 @@ class Event() : Listener{
                     if (attacker is Player) { // attacker victimが人間かつ弓で攻撃された場合
                         if (gameJobList[attacker] == "hunter"){ //狩人かの確認
                             victim.health = 0.0
+                            return
+                        }
+                    }
+                }else if (damager is Player){
+                    val attacker = damager
+                    if (gameJobList[attacker] == "aooni"){ // 青鬼の攻撃だった場合
+                        if (attacker.equipment.helmet.type != Material.AIR ){
+                            victim.health = 0.0
+                            return
                         }
                     }
                 }
-            }
+            }//上記の条件を満たさないダメージは無効
+            event.isCancelled = true
+            return
         }
     }
     @EventHandler
