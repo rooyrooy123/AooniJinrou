@@ -1,9 +1,10 @@
-package me.rooyrooy.aooniJinrou.Chest
+package me.rooyrooy.aooniJinrou.chest
 
 import me.rooyrooy.aooniJinrou.TaskHandler
-import me.rooyrooy.aooniJinrou.chestOpened
-import me.rooyrooy.aooniJinrou.chestEquipment
+import me.rooyrooy.aooniJinrou.gameChestOpened
+import me.rooyrooy.aooniJinrou.gameChestEquipment
 import me.rooyrooy.aooniJinrou.gameJobList
+import me.rooyrooy.aooniJinrou.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -35,7 +36,7 @@ class ChestEvent : Listener {
             val name = entity.name
             floor = name.replace("Floor","").toInt()//ちぇすとの階層
         }
-        if (chestOpened.contains("${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}")){
+        if (gameChestOpened.contains("${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}")){
             val chestItem = ItemStack(Material.STRUCTURE_VOID)
             val chestItemMeta = chestItem.itemMeta
             chestItemMeta.displayName(Component.text("§4§l※§cここの§e鍵の欠片§cは取得済みです"))
@@ -73,7 +74,7 @@ class ChestEvent : Listener {
                 }
             }else{
                 if (aooniCanGet(blockloc) == true) {
-                    if (!chestEquipment.containsKey("${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}")){
+                    if (!gameChestEquipment.containsKey("${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}")){
                         val equipments = arrayOf(
                             Material.DIAMOND_HELMET,
                             Material.DIAMOND_CHESTPLATE,
@@ -81,9 +82,9 @@ class ChestEvent : Listener {
                             Material.DIAMOND_BOOTS
                         )
                         val equipment = equipments.random()
-                        chestEquipment["${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}"] = equipments.random()
+                        gameChestEquipment["${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}"] = equipments.random()
                     }
-                    val chestItem = ItemStack(chestEquipment["${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}"]!!)
+                    val chestItem = ItemStack(gameChestEquipment["${player}.${blockloc.x}.${blockloc.y}.${blockloc.z}"]!!)
                     val chestItemMeta = chestItem.itemMeta
                     chestItemMeta.displayName(Component.text("§9§l§n青鬼装備の欠片"))
                     val currentLore = chestItemMeta.lore ?: mutableListOf()
@@ -136,7 +137,7 @@ class ChestEvent : Listener {
         val blockEnderChest = location.world.getBlockAt(location)
         val blockloc = blockEnderChest.location
         if (clickedItem.type == Material.OAK_BUTTON){ //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
-            chestOpened.add("${clicker}.${blockloc.x}.${blockloc.y}.${blockloc.z}")
+            gameChestOpened.add("${clicker}.${blockloc.x}.${blockloc.y}.${blockloc.z}")
 
         }else if(clickedItem.type == Material.DIAMOND_BOOTS
             || clickedItem.type == Material.DIAMOND_LEGGINGS
@@ -178,8 +179,7 @@ class ChestEvent : Listener {
 
             enderChestOpen(clicker,inventory)
         }, 1L) // 1ティック遅らせる
-
-
+        Key().Get(clicker)
     }
 
     fun aooniCanGet(location: Location) : Boolean { //チェストの状態が青鬼が装備を獲得できる状態なのか

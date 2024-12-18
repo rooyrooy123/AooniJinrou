@@ -1,4 +1,4 @@
-package me.rooyrooy.aooniJinrou.Chest
+package me.rooyrooy.aooniJinrou.chest
 
 import de.tr7zw.nbtapi.NBTEntity
 import org.bukkit.Bukkit

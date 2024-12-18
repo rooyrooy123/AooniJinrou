@@ -1,4 +1,4 @@
-package me.rooyrooy.aooniJinrou.Setting
+package me.rooyrooy.aooniJinrou.setting
 
 import me.rooyrooy.aooniJinrou.jobitem
 import org.bukkit.Material

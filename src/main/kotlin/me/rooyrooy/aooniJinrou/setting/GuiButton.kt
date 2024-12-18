@@ -1,4 +1,4 @@
-package me.rooyrooy.aooniJinrou.Setting
+package me.rooyrooy.aooniJinrou.setting
 
 import me.rooyrooy.aooniJinrou.AooniJinrou
 import me.rooyrooy.aooniJinrou.jobName

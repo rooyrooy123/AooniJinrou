@@ -1,11 +1,11 @@
 package me.rooyrooy.aooniJinrou
 
-import me.rooyrooy.aooniJinrou.Chest.ChestEvent
-import me.rooyrooy.aooniJinrou.Chest.ChestPlace
-import me.rooyrooy.aooniJinrou.Game.Event
-import me.rooyrooy.aooniJinrou.Job.JobGive
-import me.rooyrooy.aooniJinrou.Setting.SettingChest
-import me.rooyrooy.aooniJinrou.Setting.SettingGui
+import me.rooyrooy.aooniJinrou.chest.ChestEvent
+import me.rooyrooy.aooniJinrou.chest.ChestPlace
+import me.rooyrooy.aooniJinrou.game.Event
+import me.rooyrooy.aooniJinrou.job.JobGive
+import me.rooyrooy.aooniJinrou.setting.SettingChest
+import me.rooyrooy.aooniJinrou.setting.SettingGui
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getOnlinePlayers
 import org.bukkit.ChatColor
@@ -39,9 +39,13 @@ val jobitem = mapOf("aooni" to Material.BLUE_WOOL,
     "takeshi" to Material.YELLOW_WOOL,
     "takurou" to Material.PINK_WOOL)
 var gameStart : Boolean = true
-var chestOpened : ArrayList<String> = arrayListOf()
-var chestEquipment : MutableMap<String,Material> = mutableMapOf()
+var gameChestOpened : ArrayList<String> = arrayListOf()
+var gameChestEquipment : MutableMap<String,Material> = mutableMapOf()
 var gameJobList : MutableMap<Player,String> = mutableMapOf()
+var gameKeyUnderNeed = 0
+var gameKeyTopNeed = 0
+var gameChestCount : MutableMap<Int,Int> = mutableMapOf()
+var gameWorld = Bukkit.getWorld("world")
 
 class AooniJinrou : JavaPlugin() {
 

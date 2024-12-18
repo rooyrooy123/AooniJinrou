@@ -1,4 +1,4 @@
-package me.rooyrooy.aooniJinrou.Setting
+package me.rooyrooy.aooniJinrou.setting
 
 import de.tr7zw.nbtapi.NBTEntity
 import org.bukkit.Location

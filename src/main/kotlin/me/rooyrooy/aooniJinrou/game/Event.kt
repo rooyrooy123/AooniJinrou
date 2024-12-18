@@ -1,8 +1,9 @@
-package me.rooyrooy.aooniJinrou.Game
+package me.rooyrooy.aooniJinrou.game
 
 
 import me.rooyrooy.aooniJinrou.gameJobList
 import me.rooyrooy.aooniJinrou.gameStart
+import me.rooyrooy.aooniJinrou.gameWorld
 import me.rooyrooy.aooniJinrou.jobName
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -20,6 +21,8 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 class Event() : Listener{
     @EventHandler
@@ -79,6 +82,24 @@ class Event() : Listener{
             if (gameJobList[attacker] == "hunter"){ //ハンターが殺した
                 Bukkit.broadcastMessage(
                     "${jobName[victimJob]}：${victim.name}§bは${jobName[attackerJob]}：${attacker.name}§bに射抜かれた。")
+                if (gameJobList[victim] == "hiroshi"){
+                    val players = Bukkit.getOnlinePlayers()
+                    Bukkit.broadcastMessage("§2狩人§bが§dひろし§bを誤射したので、§4青鬼以外に盲目を付与")
+                    for (loopPlayer in players){
+                        if (loopPlayer.gameMode != GameMode.SPECTATOR){
+                            if (loopPlayer.world == gameWorld){
+                                if (gameJobList[loopPlayer] != "aooni") {
+                                    // Blindnessを200TICK付与
+                                    val blindnessEffect = PotionEffect(PotionEffectType.BLINDNESS, 200, 0)
+                                    blindnessEffect.withParticles(false) // パーティクルを非表示にする
+                                    // プレイヤーに効果を付与
+                                    loopPlayer.addPotionEffect(blindnessEffect)
+                                }
+
+                            }
+                        }
+                    }
+                }
             }else if (gameJobList[attacker] == "aooni"){ //青鬼が殺した
                 Bukkit.broadcastMessage(
                     "§e「§c${victim.name}§e」§bは§9§l青鬼§bに食べられた。")
