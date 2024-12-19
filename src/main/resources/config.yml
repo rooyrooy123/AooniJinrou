@@ -8,3 +8,34 @@ AooniJinrou:
       takurou: 1
     Game:
       Time: 1200
+      World: "world"
+  Location:
+    world:
+      Start:
+        x: 100
+        y: 50
+        z: 10
+      Gate:
+        UnderFloor:
+          x: 10
+          y: 10
+          z: 10
+        TopFloor:
+          x: 50
+          y: 10
+          z: 50
+      Chest:
+        Floor-1:
+          - x: 100
+            y: 64
+            z: 100
+            face: EAST
+          - x: 200
+            y: 61
+            z: 100
+            face: WEST
+        Floor1:
+          - x: 50
+            y: 15
+            z: 10
+            face: NORTH

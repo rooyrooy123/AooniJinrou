@@ -4,11 +4,17 @@ import me.rooyrooy.aooniJinrou.gameWorld
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.EnderChest
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 
-class ChestPlace(){
+class ChestPlace(
+    private val config: FileConfiguration){
     fun placeAll(){
+        val floorList = config.getConfigurationSection("AooniJinrou.Location.${gameWorld}.Chest")!!.getKeys(false)
+        for (floor in floorList){
+            val locationList = config.getList("AooniJinrou.Location.${gameWorld}.Chest.Floor${floor}")
+        }
         // ワールド内のエンティティを走査
         for (entity in gameWorld!!.entities) {
             // ArmorStandかつ名前に "Floor" を含む場合に処理
@@ -26,7 +32,7 @@ class ChestPlace(){
                     // エンダーチェストの向きを設定
                     blockData.facing = getBlockFaceFromYaw(rotation)
                     // エンダーチェストを設定
-                    block.setBlockData(blockData)
+                    block.blockData = blockData
                 }
             }
 
@@ -54,7 +60,7 @@ class ChestPlace(){
                         blockData.facing = getBlockFaceFromYaw(rotation)
 
                         // エンダーチェストを設定
-                        block.setBlockData(blockData)
+                        block.blockData = blockData
                     }
 
                 }
@@ -67,7 +73,7 @@ class ChestPlace(){
             yaw >= -45f && yaw < 45f -> BlockFace.SOUTH
             yaw >= 45f && yaw < 135f -> BlockFace.WEST
             yaw >= 135f || yaw < -135f -> BlockFace.NORTH
-            yaw >= -135f && yaw < -45f -> BlockFace.EAST
+            yaw >= -135f -> BlockFace.EAST
             else -> BlockFace.SOUTH
         }
     }

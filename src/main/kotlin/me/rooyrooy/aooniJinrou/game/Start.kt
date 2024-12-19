@@ -8,15 +8,15 @@ import org.bukkit.World
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 
-class GameStart(world: World) {
+class Start(world: World) {
     init {
-        GameReset()
+        Reset()
         gameWorld = world
         setupChestCount()
     }
 }
 fun setupChestCount() {
-    var floor = 0
+    var floor: Int
     gameKeyTopNeed = 0
     gameKeyUnderNeed = 0
     for (num in -10..10){

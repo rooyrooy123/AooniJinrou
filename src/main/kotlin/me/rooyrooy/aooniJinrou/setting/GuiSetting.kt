@@ -1,6 +1,6 @@
 package me.rooyrooy.aooniJinrou.setting
 
-import me.rooyrooy.aooniJinrou.jobitem
+import me.rooyrooy.aooniJinrou.jobItem
 import org.bukkit.Material
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
@@ -10,7 +10,7 @@ import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.SimpleItem
 import xyz.xenondevs.invui.window.Window
 
-class SettingGui(
+class GuiSetting(
     config: FileConfiguration
 ){
 
@@ -19,20 +19,20 @@ class SettingGui(
         val itemsSection = config.getConfigurationSection("AooniJinrou.Setting")
             ?: throw NullPointerException() //設定取得 例外はnull
         val setting: MutableSet<String> = itemsSection.getKeys(false) //Job Time etc...
-        val items = arrayListOf<SettingGuiButton>()
+        val items = arrayListOf<GuiButton>()
         val border = SimpleItem(ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName(""))
-        setting.forEach { settingKey -> // settingkey == Job ,Game
+        setting.forEach { settingKey -> // settingKey == Job ,Game
             val keySettingSection =
                 config.getConfigurationSection("AooniJinrou.Setting.${settingKey}") ?: throw NullPointerException() //etc AooniJinrou.Setting.Job
             var material: Material
             val keys = keySettingSection.getKeys(false) //Etc hiroshi time
             keys.forEach { key ->
-                if (settingKey == "Job") {
-                    material = Material.valueOf(jobitem[key].toString())
+                material = if (settingKey == "Job") {
+                    Material.valueOf(jobItem[key].toString())
                 } else { //JOB設定以外
-                    material = Material.WHITE_WOOL
+                    Material.WHITE_WOOL
                 }
-                items.add(SettingGuiButton(material, "${settingKey}.${key}", keySettingSection.getInt(key)))
+                items.add(GuiButton(material, "${settingKey}.${key}", keySettingSection.getInt(key)))
             }
         }
         gui

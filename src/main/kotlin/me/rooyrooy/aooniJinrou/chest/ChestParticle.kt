@@ -18,12 +18,16 @@ class ChestParticle(private val location: Location) {
         task = object : BukkitRunnable() {
             override fun run() {
                 val elapsedTime = (System.currentTimeMillis() - startTime) / 1000 // 経過時間（秒単位）
-                if(elapsedTime == 0.toLong()){
-                    spawnParticle(16720932,600)
-                }else if(elapsedTime == 30.toLong()){
-                    spawnParticle(16771420,1200)
-                }else if(elapsedTime == 90.toLong()){
-                    spawnParticle(2818303,1800)
+                when (elapsedTime) {
+                    0.toLong() -> {
+                        spawnParticle(16720932,600)
+                    }
+                    30.toLong() -> {
+                        spawnParticle(16771420,1200)
+                    }
+                    90.toLong() -> {
+                        spawnParticle(2818303,1800)
+                    }
                 }
             }
         }

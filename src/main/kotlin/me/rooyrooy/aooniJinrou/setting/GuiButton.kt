@@ -11,15 +11,15 @@ import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
-class SettingGuiButton(
+class GuiButton(
     private val item: Material,
     private val setting: String, //設定名
     private var result: Int, //Config設定値
 ) : AbstractItem() {
     private val plugin: JavaPlugin = JavaPlugin.getPlugin(AooniJinrou::class.java) //CONFIG読み込み、書き込み用
-    var job = ""
+    private var job = ""
     init {
-        if (setting.contains("Job.") == true){
+        if (setting.contains("Job.")){
             job = setting.replace("Job.","")
         }
     }
@@ -54,14 +54,10 @@ class SettingGuiButton(
         }
         notifyWindows()
     }
-    fun updateConfig(key: String, value: Any) {
+    private fun updateConfig(key: String, value: Any) {
         // config.ymlを更新
         plugin.config.set(key, value)
         plugin.saveConfig()
-    }
-
-    fun getConfigValue(key: String): Any? {
-        return plugin.config.get(key)
     }
 
 

@@ -1,5 +1,5 @@
 package me.rooyrooy.aooniJinrou.game
 
-class GameReset{
+class Reset{
     var chestOpened : ArrayList<String> = arrayListOf()
 }

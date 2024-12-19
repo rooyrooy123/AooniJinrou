@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
-class Event() : Listener{
+class Event : Listener{
     @EventHandler
     fun onDrop(event: PlayerDropItemEvent){
         val item = event.itemDrop.itemStack
@@ -56,9 +56,8 @@ class Event() : Listener{
                             }
                         }
                     } else if (damager is Player) {
-                        val attacker = damager
-                        if (gameJobList[attacker] == "aooni") { // 青鬼の攻撃だった場合
-                            if (attacker.equipment.helmet.type != Material.AIR) {
+                        if (gameJobList[damager] == "aooni") { // 青鬼の攻撃だった場合
+                            if (damager.equipment.helmet.type != Material.AIR) {
                                 victim.health = 0.0
                                 return
                             }
@@ -202,7 +201,6 @@ class Event() : Listener{
     @EventHandler
     fun onInventoryClick(event: InventoryClickEvent) {
         if (gameStart) {
-            val clickedSlot = event.slot
             var clickedItem = event.cursor // プレイヤーが持っているアイテム（クリック中のアイテム）
             if (event.isShiftClick) {
                 clickedItem = event.currentItem
@@ -216,7 +214,7 @@ class Event() : Listener{
             if (clickedItem == null || clickedItem.type == Material.AIR) return
 
             // 防具スロットかどうかをチェック
-            if (isArmorSlot(event, clickedSlot)) {
+            if (isArmorSlot(event)) {
                 // ダイヤモンド防具を装備できないようにする
                 if (isDiamondArmor(clickedItem.type)) {
                     event.isCancelled = true
@@ -226,11 +224,10 @@ class Event() : Listener{
         }
     }
 
-    private fun isArmorSlot(event: InventoryClickEvent, slot: Int): Boolean {
+    private fun isArmorSlot(event: InventoryClickEvent): Boolean {
         // プレイヤーの装備スロット（ヘルメット、チェストプレート、レギンス、ブーツ）
         return event.slotType == InventoryType.SlotType.ARMOR
     }
-
     private fun isDiamondArmor(material: Material): Boolean {
         // ダイヤモンド防具の種類をチェック
         return material == Material.DIAMOND_HELMET ||

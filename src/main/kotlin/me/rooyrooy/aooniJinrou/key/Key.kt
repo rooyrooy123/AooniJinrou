@@ -6,9 +6,9 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class Key(){
-    fun Get(player: Player){
-        if (GetCount(player,Material.OAK_BUTTON) >= gameKeyUnderNeed){
+class Key{
+    fun get(player: Player){
+        if (getAmount(player,Material.OAK_BUTTON) >= gameKeyUnderNeed){
             // 名前とLORE付きのきのんあつばｎ
             val key = ItemStack(Material.OAK_PRESSURE_PLATE, 1)
             val meta = key.itemMeta
@@ -20,7 +20,7 @@ class Key(){
             player.inventory.remove(Material.OAK_BUTTON)
             player.inventory.addItem(key)
 
-        }else if (GetCount(player,Material.BLUE_CARPET) >= gameKeyTopNeed){
+        }else if (getAmount(player,Material.BLUE_CARPET) >= gameKeyTopNeed){
             val key = ItemStack(Material.BLUE_WOOL, 1)
             val meta = key.itemMeta
             meta?.let {
@@ -35,13 +35,13 @@ class Key(){
     }
 
 
-    fun GetCount(player: Player,material: Material) : Int{
-        var count = 0
+    private fun getAmount(player: Player, material: Material) : Int{
+        var amount = 0
         for (item in player.inventory.contents){
             if (item?.type == material){
-                count ++
+                amount ++
             }
         }
-        return  count
+        return amount
     }
 }

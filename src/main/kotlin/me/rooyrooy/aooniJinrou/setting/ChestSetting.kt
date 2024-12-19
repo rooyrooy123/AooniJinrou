@@ -7,7 +7,7 @@ import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.inventory.ItemStack
 
-class SettingChest(
+class ChestSetting(
     private val location: Location
 ){
 
@@ -37,7 +37,7 @@ class SettingChest(
             if (entity.type == EntityType.ARMOR_STAND && entity is ArmorStand) {
                 if (entity.customName?.contains("Floor") == true) {
                     // 頭にエンダーチェストを装備
-                    if (boolean == true) {
+                    if (boolean) {
                         val headItem = ItemStack(Material.ENDER_CHEST)
                         entity.equipment.helmet = headItem
                         entity.isGlowing = true
