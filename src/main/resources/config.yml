@@ -12,30 +12,16 @@ AooniJinrou:
   Location:
     world:
       Start:
-        x: 100
-        y: 50
-        z: 10
+        [50,64,50]
       Gate:
         UnderFloor:
-          x: 10
-          y: 10
-          z: 10
+          [50,60,60]
         TopFloor:
-          x: 50
-          y: 10
-          z: 50
+          [30,80,10]
       Chest:
         Floor-1:
-          - x: 100
-            y: 64
-            z: 100
-            face: EAST
-          - x: 200
-            y: 61
-            z: 100
-            face: WEST
+          - [100, 64, -200]
+          - [50, 64, -200]
         Floor1:
-          - x: 50
-            y: 15
-            z: 10
-            face: NORTH
+          - [ 10, 64, -200]
+          - [ 120, 64, -200]
