@@ -39,7 +39,7 @@ class GuiButton(
         return ItemBuilder(outputItem)
             .setAmount(result)
             .setDisplayName("§a§l§n設定項目➤${setting} §2§l== §e§l§n${outputAmount}")
-            .addLoreLines("${JobInfo.valueOf(job).displayName}")
+            .addLoreLines(JobInfo.valueOf(job).displayName)
             .addLoreLines("§3§l右クリック➤§b§l+1")
             .addLoreLines("§c§l左クリック➤§4§l+1")
             .addLoreLines("§3§l§nシフト右クリック➤§b§l+10")

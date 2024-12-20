@@ -31,6 +31,7 @@ class ChestParticle(private val location: Location) {
         val areaEffectCloud = location.world?.spawnEntity(location, EntityType.AREA_EFFECT_CLOUD) as? AreaEffectCloud ?: return
         // NBTを設定
         val nbtEntity = NBTEntity(areaEffectCloud)
+
         nbtEntity.setString("Particle","dust_color_transition")
         nbtEntity.setBoolean("CustomNameVisible", false)
         nbtEntity.setFloat("Radius",0.5f)
