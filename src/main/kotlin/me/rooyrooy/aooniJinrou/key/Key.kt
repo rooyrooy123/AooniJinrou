@@ -2,39 +2,35 @@ package me.rooyrooy.aooniJinrou.key
 
 import me.rooyrooy.aooniJinrou.gameKeyTopNeed
 import me.rooyrooy.aooniJinrou.gameKeyUnderNeed
+import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
+
 
 class Key{
     fun get(player: Player){
         if (getAmount(player,Material.OAK_BUTTON) >= gameKeyUnderNeed){
-            // 名前とLORE付きのきのんあつばｎ
-            val key = ItemStack(Material.OAK_PRESSURE_PLATE, 1)
-            val meta = key.itemMeta
-            meta?.let {
-                it.setDisplayName("§e§l§n地下室の鍵")
-                it.lore = listOf("§7地下室解放可能時刻を過ぎると、設置可能")
-                key.itemMeta = it
-            }
+            val consoleSender: ConsoleCommandSender = Bukkit.getServer().consoleSender
+            Bukkit.getServer().dispatchCommand(consoleSender, "give ${player.name} oak_pressure_plate{CanPlaceOn:[\"minecraft:obsidian\"],display:{Name:'{\"text\":\"地下室の鍵\",\"color\":\"yellow\",\"bold\":true,\"italic\":false,\"underlined\":true}',Lore:['{\"text\":\"地下室解放可能時刻を過ぎると、設置可能に\",\"color\":\"gray\",\"italic\":false}']}} 1")
+
             player.inventory.remove(Material.OAK_BUTTON)
-            player.inventory.addItem(key)
+            player.sendMessage("§e§l§n地下室への鍵を獲得しました！")
+            player.playSound(player,"entity.player.levelup",1.0f,2.0f)
 
-        }else if (getAmount(player,Material.BLUE_CARPET) >= gameKeyTopNeed){
-            val key = ItemStack(Material.BLUE_WOOL, 1)
-            val meta = key.itemMeta
-            meta?.let {
-                it.setDisplayName("§1§l§n最上階への鍵")
-                it.lore = listOf("§7最上階解放可能時刻を過ぎると、設置可能に")
-                key.itemMeta = it
-            }
+        }
+        if (getAmount(player,Material.BLUE_CARPET) >= gameKeyTopNeed){
 
-            player.inventory.addItem(key)
+            val consoleSender: ConsoleCommandSender = Bukkit.getServer().consoleSender
+            Bukkit.getServer().dispatchCommand(consoleSender, "give ${player.name} blue_wool{CanPlaceOn:[\"minecraft:gold_block\"],display:{Name:'{\"text\":\"最上階への鍵\",\"color\":\"dark_blue\",\"bold\":true,\"italic\":false,\"underlined\":true}',Lore:['{\"text\":\"最上階解放可能時刻を過ぎると、設置可能に\",\"color\":\"gray\",\"italic\":false}']}} 1")
+
+
+            player.sendMessage("§e§l§n最上階への鍵を獲得しました！")
+            //player.inventory.addItem(key)
             player.inventory.remove(Material.BLUE_CARPET)
+            player.playSound(player,"entity.player.levelup",1.0f,2.0f)
         }
     }
-
-
     private fun getAmount(player: Player, material: Material) : Int{
         var amount = 0
         for (item in player.inventory.contents){
@@ -42,6 +38,6 @@ class Key{
                 amount ++
             }
         }
-        return amount
+        return  amount
     }
 }

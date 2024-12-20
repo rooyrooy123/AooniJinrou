@@ -1,10 +1,7 @@
 package me.rooyrooy.aooniJinrou.game
 
 
-import me.rooyrooy.aooniJinrou.gameJobList
-import me.rooyrooy.aooniJinrou.gameStart
-import me.rooyrooy.aooniJinrou.gameWorld
-import me.rooyrooy.aooniJinrou.jobName
+import me.rooyrooy.aooniJinrou.*
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -76,11 +73,11 @@ class Event : Listener{
         if (attacker is Player){
             event.isCancelled = true
             victim.gameMode = GameMode.SPECTATOR
-            val attackerJob = gameJobList[attacker]
-            val victimJob = gameJobList[victim]
+            val attackerJob = gameJobList[attacker] ?:return
+            val victimJob = gameJobList[victim] ?: return
             if (gameJobList[attacker] == "hunter"){ //ハンターが殺した
                 Bukkit.broadcastMessage(
-                    "${jobName[victimJob]}：${victim.name}§bは${jobName[attackerJob]}：${attacker.name}§bに射抜かれた。")
+                    "${JobInfo.valueOf(victimJob).displayName}：${victim.name}§bは${JobInfo.valueOf(attackerJob).displayName}：${attacker.name}§bに射抜かれた。")
                 if (gameJobList[victim] == "hiroshi"){
                     val players = Bukkit.getOnlinePlayers()
                     Bukkit.broadcastMessage("§2狩人§bが§dひろし§bを誤射したので、§4青鬼以外に盲目を付与")

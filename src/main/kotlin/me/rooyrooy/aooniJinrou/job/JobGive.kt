@@ -21,8 +21,8 @@ class JobGive{
         player.sendMessage(job)
         if (jobList.contains(job)){
             gameJobList[player] = job
-            player.sendMessage("§bあなたの役職は" + jobName[job]!! + "§bになりました！")
-            player.sendMessage(jobInfo[job]!!)
+            player.sendMessage("§bあなたの役職は${JobInfo.valueOf(job).displayName}§bになりました！")
+            player.sendMessage(JobInfo.valueOf(job).description)
         }else if (job == "reset"){
             gameJobList.remove(player)
         }

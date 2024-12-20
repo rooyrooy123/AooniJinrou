@@ -1,6 +1,6 @@
 package me.rooyrooy.aooniJinrou.setting
 
-import me.rooyrooy.aooniJinrou.jobItem
+import me.rooyrooy.aooniJinrou.JobInfo
 import org.bukkit.Material
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
@@ -28,7 +28,8 @@ class GuiSetting(
             val keys = keySettingSection.getKeys(false) //Etc hiroshi time
             keys.forEach { key ->
                 material = if (settingKey == "Job") {
-                    Material.valueOf(jobItem[key].toString())
+                    JobInfo.valueOf(key).item
+                    //jobItem[key]
                 } else { //JOB設定以外
                     Material.WHITE_WOOL
                 }

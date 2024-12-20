@@ -1,14 +1,14 @@
 AooniJinrou:
   Setting:
     Job:
-      aooni: 3
-      hunter: 1
-      mika: 1
-      takeshi: 1
-      takurou: 1
+      AOONI: 3
+      HUNTER: 1
+      MIKA: 1
+      TAKESHI: 1
+      TAKUROU: 1
     Game:
       Time: 1200
-      World: "world"
+      World: world
   Location:
     world:
       Start:
@@ -22,6 +22,6 @@ AooniJinrou:
         Floor-1:
           - [100, 64, -200]
           - [50, 64, -200]
-        Floor1:
-          - [ 10, 64, -200]
-          - [ 120, 64, -200]
+        Floor4:
+          - [ 237, 76, 89]
+          - [ 258, 78, 94]
