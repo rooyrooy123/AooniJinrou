@@ -18,6 +18,9 @@ AooniJinrou:
           [50,60,60]
         TopFloor:
           [30,80,10]
+      Plate:
+        SilverKey:
+          [284, 83, 130]
       Chest:
         Floor-1:
           - [100, 64, -200]

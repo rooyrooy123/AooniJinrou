@@ -3,27 +3,27 @@
     <output-path>$USER_HOME$/Desktop/マイクラ類/1.19.4 青鬼ごっこ人狼/plugins</output-path>
     <root id="archive" name="aoonijinrou.jar">
       <element id="module-output" name="aoonijinrou" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/annotations/24.0.1/annotations-24.0.1.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib-jdk7/2.1.0/kotlin-stdlib-jdk7-2.1.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.1.0/kotlin-stdlib-jdk8-2.1.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib/2.1.0/kotlin-stdlib-2.1.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r1/1.9/inventory-access-r1-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r13/1.9/inventory-access-r13-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/annotations/24.0.0/annotations-24.0.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r6/1.9/inventory-access-r6-1.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r10/1.9/inventory-access-r10-1.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/invui-core/1.9/invui-core-1.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r9/1.9/inventory-access-r9-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib/2.1.0/kotlin-stdlib-2.1.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r5/1.9/inventory-access-r5-1.9.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access/1.9/inventory-access-1.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r7/1.9/inventory-access-r7-1.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/annotations/24.0.0/annotations-24.0.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r2/1.9/inventory-access-r2-1.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r12/1.9/inventory-access-r12-1.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r13/1.9/inventory-access-r13-1.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r8/1.9/inventory-access-r8-1.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/fr/mrmicky/fastboard/1.2.1/fastboard-1.2.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/invui-core/1.9/invui-core-1.9.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r3/1.9/inventory-access-r3-1.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r11/1.9/inventory-access-r11-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/de/tr7zw/item-nbt-api/2.14.0/item-nbt-api-2.14.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r7/1.9/inventory-access-r7-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.1.0/kotlin-stdlib-jdk8-2.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/fr/mrmicky/fastboard/1.2.1/fastboard-1.2.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib-jdk7/2.1.0/kotlin-stdlib-jdk7-2.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r10/1.9/inventory-access-r10-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r1/1.9/inventory-access-r1-1.9.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r4/1.9/inventory-access-r4-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r11/1.9/inventory-access-r11-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r12/1.9/inventory-access-r12-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r8/1.9/inventory-access-r8-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r2/1.9/inventory-access-r2-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xyz/xenondevs/invui/inventory-access-r9/1.9/inventory-access-r9-1.9.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

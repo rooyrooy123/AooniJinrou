@@ -17,5 +17,3 @@ commands:
     usage: <command> <true/false>チェスト設置場所の発光のON/OFF
   aoonijinrou-chest-place-all:
     usage: <command>
-  aoonijinrou-chest-place-floor:
-    usage: <command> <FloorNumber>

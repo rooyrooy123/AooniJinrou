@@ -1,25 +1,22 @@
 package me.rooyrooy.aooniJinrou.game
 
 
-import me.rooyrooy.aooniJinrou.*
+import me.rooyrooy.aooniJinrou.Items
+import me.rooyrooy.aooniJinrou.gameKeyPlateSilver
+import me.rooyrooy.aooniJinrou.gameStart
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 
 class Event : Listener{
     @EventHandler
@@ -30,99 +27,32 @@ class Event : Listener{
                 || item.type == Material.OAK_BUTTON
                 || item.type == Material.ARROW
                 || item.type == Material.BOW
+                || item.type == Material.IRON_INGOT
+                || item.type == Material.GOLD_INGOT
+                || item.type == Material.DIAMOND
                 ) {
                 // イベントをキャンセル
                 event.isCancelled = true
             }
         }
     }
-    @EventHandler
-    fun onDamageByEntity(event: EntityDamageByEntityEvent){
-        val damager = event.damager
-        val victim = event.entity
-
-        if (gameStart){
-            if (victim is Player) {
-                if (gameJobList[victim] != "hunter") {
-                    if (damager is Arrow) {
-                        val attacker = damager.shooter
-                        if (attacker is Player) { // attacker victimが人間かつ弓で攻撃された場合
-                            if (gameJobList[attacker] == "hunter") { //狩人かの確認
-                                victim.health = 0.0
-                                return
-                            }
-                        }
-                    } else if (damager is Player) {
-                        if (gameJobList[damager] == "aooni") { // 青鬼の攻撃だった場合
-                            if (damager.equipment.helmet.type != Material.AIR) {
-                                victim.health = 0.0
-                                return
-                            }
-                        }
-                    }
-                }
-            }//上記の条件を満たさないダメージは無効
-            event.isCancelled = true
-            return
-        }
-    }
-    @EventHandler
-    fun onDeath(event: PlayerDeathEvent){
-        val victim = event.entity
-        val attacker = victim.killer
-        if (attacker is Player){
-            event.isCancelled = true
-            victim.gameMode = GameMode.SPECTATOR
-            val attackerJob = gameJobList[attacker] ?:return
-            val victimJob = gameJobList[victim] ?: return
-            if (gameJobList[attacker] == "hunter"){ //ハンターが殺した
-                Bukkit.broadcastMessage(
-                    "${JobInfo.valueOf(victimJob).displayName}：${victim.name}§bは${JobInfo.valueOf(attackerJob).displayName}：${attacker.name}§bに射抜かれた。")
-                if (gameJobList[victim] == "hiroshi"){
-                    val players = Bukkit.getOnlinePlayers()
-                    Bukkit.broadcastMessage("§2狩人§bが§dひろし§bを誤射したので、§4青鬼以外に盲目を付与")
-                    for (loopPlayer in players){
-                        if (loopPlayer.gameMode != GameMode.SPECTATOR){
-                            if (loopPlayer.world == gameWorld){
-                                if (gameJobList[loopPlayer] != "aooni") {
-                                    // Blindnessを200TICK付与
-                                    val blindnessEffect = PotionEffect(PotionEffectType.BLINDNESS, 200, 0)
-                                    blindnessEffect.withParticles(false) // パーティクルを非表示にする
-                                    // プレイヤーに効果を付与
-                                    loopPlayer.addPotionEffect(blindnessEffect)
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }else if (gameJobList[attacker] == "aooni"){ //青鬼が殺した
-                Bukkit.broadcastMessage(
-                    "§e「§c${victim.name}§e」§bは§9§l青鬼§bに食べられた。")
-
-
-            }
-        }
-    }
-
     @EventHandler //青鬼の杖
     fun onPlayerInteract(event: PlayerMoveEvent) {
         if (gameStart) {
             val player = event.player
-
             // 防具が揃っているか確認
             if (hasFullDiamondArmor(player)) {
                 // 防具を1つずつ削除
                 removeDiamondArmor(player)
 
                 // ダイヤモンドを1個与える
-                val aooniStick = ItemStack(Material.DIAMOND)
+                val aooniStick = ItemStack(Material.BLAZE_ROD)
                 val aooniStickMeta = aooniStick.itemMeta
                 aooniStickMeta.displayName(Component.text("§1§l§n青鬼の杖§b(右クリックで変身)"))
                 val currentLore = aooniStickMeta.lore ?: mutableListOf()
                 // 新しい lore を追加
                 currentLore.add("§7青鬼の姿に変身！")
-                currentLore.add("§c§n1回の変身につき、3人まで§7ひろしを食べることができます。")
+                currentLore.add("§c§n1回の変身につき、2人まで§7ひろしを食べることができます。")
                 currentLore.add("§4§n30秒経つか、杖をもう一度右クリックすると、変身が解けます。")
                 aooniStickMeta.lore = currentLore
 
@@ -131,12 +61,26 @@ class Event : Listener{
 
                 // プレイヤーに通知
                 player.sendMessage("§1§l§n青鬼の杖を手に入れました！(右クリックで発動)")
-                player.sendMessage("§c§n1回の変身につき、3人まで§7ひろしを食べることができます。")
+                player.sendMessage("§c§n1回の変身につき、2人まで§7ひろしを食べることができます。")
                 player.sendMessage("§4§n30秒経つか、杖をもう一度右クリックすると、変身が解けます。")
             }
         }
     }
+    @EventHandler //鍵取得プレート
+    fun onPlateKey(event: PlayerInteractEvent) {
+        val player = event.player
+        // 圧力板を踏んだかどうかを確認
+        if (event.clickedBlock?.type == Material.STONE_PRESSURE_PLATE ||
+            event.clickedBlock?.type == Material.LIGHT_WEIGHTED_PRESSURE_PLATE ||
+            event.clickedBlock?.type == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+        ) {
+            if (event.clickedBlock?.location != gameKeyPlateSilver) return
+            if (player.inventory.contents.filterNotNull().filter { it.type == Material.IRON_INGOT }.sumOf { it.amount } > 0) return
+            player.inventory.addItem(Items.KEY_SILVER.toItemStack())
+            player.sendMessage("§7§l§n銀の鍵を獲得しました！§e脱出には§7§l§n銀の鍵§eと§6§l§n金の鍵§eを合成して、§1§l§n青鬼の鍵§eを作る必要があります。")
 
+        }
+    }
     private fun hasFullDiamondArmor(player: Player): Boolean {
         val inventory = player.inventory
         val requiredArmor = listOf(
@@ -196,6 +140,15 @@ class Event : Listener{
         }
     }
     @EventHandler
+    fun noTakeOff(event: InventoryClickEvent){
+        if (event.whoClicked.gameMode == GameMode.CREATIVE) return
+        if (event.clickedInventory?.type == InventoryType.PLAYER){
+            if (event.slotType == InventoryType.SlotType.ARMOR){
+                event.isCancelled = true
+            }
+        }
+    }
+    @EventHandler
     fun onInventoryClick(event: InventoryClickEvent) {
         if (gameStart) {
             var clickedItem = event.cursor // プレイヤーが持っているアイテム（クリック中のアイテム）
@@ -222,7 +175,6 @@ class Event : Listener{
     }
 
     private fun isArmorSlot(event: InventoryClickEvent): Boolean {
-        // プレイヤーの装備スロット（ヘルメット、チェストプレート、レギンス、ブーツ）
         return event.slotType == InventoryType.SlotType.ARMOR
     }
     private fun isDiamondArmor(material: Material): Boolean {

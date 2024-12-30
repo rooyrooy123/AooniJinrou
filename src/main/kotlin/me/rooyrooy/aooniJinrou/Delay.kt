@@ -2,7 +2,7 @@ package me.rooyrooy.aooniJinrou
 
 import org.bukkit.Bukkit
 
-class TaskHandler {
+class Delay {
     fun executeWithDelay(task: () -> Unit, delay: Long = 1L) {
         Bukkit.getScheduler().runTaskLater(PluginProvider.plugin, Runnable {
             task()

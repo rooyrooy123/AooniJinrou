@@ -27,57 +27,36 @@ class ChestEvent : Listener {
         val blockLoc = blockEnderChest.location
         val floor = floorName.replace("Floor","").toInt()//ちぇすとの階層 INT
 
-        if (gameChestOpened.contains("${player}.${blockLoc.x}.${blockLoc.y}.${blockLoc.z}")){
-            val chestItem = ItemStack(Material.STRUCTURE_VOID)
-            chestItem.editMeta { meta ->
-                meta.displayName(Component.text("§4§l※§cここの§e鍵の欠片§cは取得済みです"))
-                meta.lore(listOf(
-                    Component.text("§7未開封のチェストに鍵の欠片があります"),
-                    Component.text("")
-                )) // L
-            }
+        if (gamePlayerChestOpened.contains("${player.uniqueId}.${blockLoc.x}.${blockLoc.y}.${blockLoc.z}")){
+            val chestItem = Items.KEY_WARNING_ALREADY.toItemStack()
             player.enderChest.setItem(13, chestItem)
 
             //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
         }else {
-            if (gameJobList[player] != "aooni") {
+            if (gameJobList[player] != "AOONI") {
                 if (floor in 1..4) { //1~4階層
 
-                    val chestItem = ItemStack(Material.OAK_BUTTON)  //これは1~4階のチェストだった場合
-                    chestItem.editMeta { meta ->
-                        meta.displayName(Component.text("§e§l地下の鍵の欠片")) // 名前を設定
-                        meta.lore(listOf(
-                            Component.text("§7本館1階～4階のチェストの鍵の欠片を"),
-                            Component.text("§7すべて集めると、§9地下室の鍵§e（木の感圧版）§7に！"))
-                        )
-                    }
+                    val chestItem = Items.KEY_UNDERFLOOR_PARTS.toItemStack()  //これは1~4階のチェストだった場合
                     player.enderChest.setItem(13, chestItem)
                     //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
                 } else if (floor == -1) {
-                    val chestItem = ItemStack(Material.BLUE_CARPET)  //これは1~4階のチェストだった場合
-                    chestItem.editMeta { meta ->
-                        meta.displayName(Component.text("§9§l最上階の鍵の欠片")) // 名前を設定
-                        meta.lore(listOf(
-                            Component.text("§7本館地下1階のチェストの鍵の欠片を"),
-                            Component.text("§7すべて集めると、§95階への鍵§e（青羊毛）§7に！")
-                        ))
-                    }
+                    val chestItem = Items.KEY_TOPFLOOR_PARTS.toItemStack()  //これは1~4階のチェストだった場合
                     player.enderChest.setItem(13, chestItem)
                     //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
                 }
             } else {
                 if (aooniCanGet(blockLoc)) {
-                    if (!gameChestEquipment.containsKey("${player}.${blockLoc.x}.${blockLoc.y}.${blockLoc.z}")) {
+                    if (!gameChestEquipment.containsKey("${blockLoc.x}.${blockLoc.y}.${blockLoc.z}")) {
                         val equipments = arrayOf(
                             Material.DIAMOND_HELMET,
                             Material.DIAMOND_CHESTPLATE,
                             Material.DIAMOND_LEGGINGS,
                             Material.DIAMOND_BOOTS
                         )
-                        gameChestEquipment["${player}.${blockLoc.x}.${blockLoc.y}.${blockLoc.z}"] = equipments.random()
+                        gameChestEquipment["${blockLoc.x}.${blockLoc.y}.${blockLoc.z}"] = equipments.random()
                     }
                     val chestItem =
-                        ItemStack(gameChestEquipment["${player}.${blockLoc.x}.${blockLoc.y}.${blockLoc.z}"]!!)
+                        ItemStack(gameChestEquipment["${blockLoc.x}.${blockLoc.y}.${blockLoc.z}"]!!)
                     chestItem.editMeta { meta ->
                         meta.displayName(Component.text("§9§l§n青鬼装備の欠片")) // 名前を設定
                         meta.lore(listOf(
@@ -87,13 +66,7 @@ class ChestEvent : Listener {
                     }
                     player.enderChest.setItem(13, chestItem)
                 } else {
-                    val chestItem = ItemStack(Material.STRUCTURE_VOID)
-                    chestItem.editMeta { meta ->
-                        meta.displayName(Component.text("§4§l装備取得不可")) // 名前を設定
-                        meta.lore(listOf(
-                            Component.text("§7もやもやはある間は装備の取得不可")
-                        ))
-                    }
+                    val chestItem = Items.EQUIPMENT_WARNING.toItemStack()
                     player.enderChest.setItem(13, chestItem)
                 }
             }
@@ -129,7 +102,7 @@ class ChestEvent : Listener {
         val blockLoc = blockEnderChest.location
         if (clickedItem.type == Material.OAK_BUTTON
             || clickedItem.type == Material.BLUE_CARPET){ //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
-            gameChestOpened.add("${clicker}.${blockLoc.x}.${blockLoc.y}.${blockLoc.z}")
+            gamePlayerChestOpened.add("${clicker.uniqueId}.${blockLoc.x}.${blockLoc.y}.${blockLoc.z}")
 
         }else if(clickedItem.type == Material.DIAMOND_BOOTS
             || clickedItem.type == Material.DIAMOND_LEGGINGS
@@ -146,9 +119,7 @@ class ChestEvent : Listener {
 
         clicker.inventory.addItem(clickedItem)
         clicker.enderChest.clear()
-
-
-        if (gameJobList[clicker] == "aooni") { //青鬼が装備とったら、もやもや発生
+        if (gameJobList[clicker] == "AOONI") { //青鬼が装備とったら、もやもや発生
             blockLoc.y += 1
             ChestParticle(blockLoc).startTimer()
         }
@@ -158,20 +129,19 @@ class ChestEvent : Listener {
         }
 
         //エンダーチェスト開いてる人一覧 青鬼ならちぇすとを更新させる
-        val taskHandler = TaskHandler() // aooniCanGetの処理遅れで2個取れてしまうため、1TICKずらして実行
+        val taskHandler = Delay() // aooniCanGetの処理遅れで2個取れてしまうため、1TICKずらして実行
         taskHandler.executeWithDelay({
             players.forEach { openPlayer ->
-                if (gameJobList[openPlayer] == "aooni"){
-                    if (gameJobList[clicker] == "aooni"){
+                if (gameJobList[openPlayer] == "AOONI"){
+                    if (gameJobList[clicker] == "AOONI"){
                         openPlayer.openInventory.topInventory
                         enderChestOpen(openPlayer)
                     }
                 }
             }
-
             enderChestOpen(clicker)
         }, 1L) // 1ティック遅らせる
-        if (gameJobList[clicker] != "aooni"){
+        if (gameJobList[clicker] != "AOONI"){
             Key().get(clicker)
         }
     }

@@ -1,9 +1,11 @@
 package me.rooyrooy.aooniJinrou.key
 
+import me.rooyrooy.aooniJinrou.Items
 import me.rooyrooy.aooniJinrou.gameKeyTopNeed
 import me.rooyrooy.aooniJinrou.gameKeyUnderNeed
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
 
@@ -16,7 +18,7 @@ class Key{
 
             player.inventory.remove(Material.OAK_BUTTON)
             player.sendMessage("§e§l§n地下室への鍵を獲得しました！")
-            player.playSound(player,"entity.player.levelup",1.0f,2.0f)
+            player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
 
         }
         if (getAmount(player,Material.BLUE_CARPET) >= gameKeyTopNeed){
@@ -28,7 +30,7 @@ class Key{
             player.sendMessage("§e§l§n最上階への鍵を獲得しました！")
             //player.inventory.addItem(key)
             player.inventory.remove(Material.BLUE_CARPET)
-            player.playSound(player,"entity.player.levelup",1.0f,2.0f)
+            player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
         }
     }
     private fun getAmount(player: Player, material: Material) : Int{
@@ -40,4 +42,5 @@ class Key{
         }
         return  amount
     }
+
 }

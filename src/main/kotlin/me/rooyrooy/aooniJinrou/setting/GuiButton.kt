@@ -1,7 +1,7 @@
 package me.rooyrooy.aooniJinrou.setting
 
 import me.rooyrooy.aooniJinrou.AooniJinrou
-import me.rooyrooy.aooniJinrou.JobInfo
+import me.rooyrooy.aooniJinrou.job.JobInfo
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType

@@ -1,6 +1,6 @@
 package me.rooyrooy.aooniJinrou.setting
 
-import me.rooyrooy.aooniJinrou.JobInfo
+import me.rooyrooy.aooniJinrou.job.JobInfo
 import org.bukkit.Material
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
