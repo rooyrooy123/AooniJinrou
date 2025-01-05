@@ -1,4 +1,4 @@
-package me.rooyrooy.aooniJinrou.game
+package me.rooyrooy.aooniJinrou.job.aooni
 
 import net.kyori.adventure.text.Component
 import org.bukkit.Material

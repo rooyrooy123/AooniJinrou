@@ -3,17 +3,20 @@ package me.rooyrooy.aooniJinrou
 import me.rooyrooy.aooniJinrou.chest.Chest
 import me.rooyrooy.aooniJinrou.chest.ChestEvent
 import me.rooyrooy.aooniJinrou.chest.ChestExtractLocations
-import me.rooyrooy.aooniJinrou.game.AooniStick
+import me.rooyrooy.aooniJinrou.job.aooni.AooniStick
 import me.rooyrooy.aooniJinrou.game.Damage
 import me.rooyrooy.aooniJinrou.game.Event
+import me.rooyrooy.aooniJinrou.game.Gate
+import me.rooyrooy.aooniJinrou.game.Timer
 import me.rooyrooy.aooniJinrou.job.JobGive
+import me.rooyrooy.aooniJinrou.key.Key
 import me.rooyrooy.aooniJinrou.setting.ChestSetting
 import me.rooyrooy.aooniJinrou.setting.GuiSetting
-import org.apache.commons.lang3.mutable.Mutable
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getOnlinePlayers
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -26,15 +29,20 @@ val jobList = arrayListOf("AOONI","HUNTER","HIROSHI","MIKA","TAKESHI","TAKUROU")
 var gameStart : Boolean = true
 var gamePlayerChestOpened : ArrayList<String> = arrayListOf()
 var gameChestEquipment : MutableMap<String, Material> = mutableMapOf()
+var gameChestIDCount = 0
+var gameChestID : MutableMap<Int,Block> = mutableMapOf()
 var gameJobList : MutableMap<Player,String> = mutableMapOf()
 var gameKeyUnderNeed = 0
 var gameKeyTopNeed = 0
 var gameChestCount : MutableMap<Int,Int> = mutableMapOf()
-var gameChestFloor : MutableMap<BlockState,String> = mutableMapOf()
+//var gameChestFloor : MutableMap<BlockState,String> = mutableMapOf()
 var gameWorld = Bukkit.getWorld("world")
 var gameTime = 0
 var gameKeyPlateSilver = Location(gameWorld,0.0,0.0,0.0)
 var gameAooniKillLimit : MutableMap<Player,Int> = mutableMapOf()
+var gameGateUnderFloor = Location(gameWorld , 0.0,0.0,0.0)
+var gameGateTopFloor = Location(gameWorld , 0.0,0.0,0.0)
+
 class AooniJinrou : JavaPlugin() {
     private lateinit var chestLocations: Map<String, List<List<Int>>>
     override fun onEnable() {
@@ -44,12 +52,22 @@ class AooniJinrou : JavaPlugin() {
         server.pluginManager.registerEvents(Event(), this)
         server.pluginManager.registerEvents(Damage(), this)
         server.pluginManager.registerEvents(AooniStick(), this)
+        server.pluginManager.registerEvents(Key(), this)
+
+        //リセ時の処理
         val worldString = config.getString("AooniJinrou.Setting.Game.World") ?: "world"
         gameWorld = Bukkit.getWorld(worldString)
         gameTime = config.getInt("AooniJinrou.Setting.Game.Time")
+
         // ちぇすとのplaceLocationデータを抽出
         chestLocations = ChestExtractLocations().getLocations(config)
+        gameGateUnderFloor =  getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Gate.UnderFloor")
+        gameGateTopFloor =  getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Gate.TopFloor")
         gameKeyPlateSilver = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Plate.SilverKey")
+        Gate().setup()
+        //すたーとじのしょり
+        Timer().start(gameTime)
+        Chest().placeAll(chestLocations)
 
     }
     private fun getLocationFromCoordinate(path: String): Location {

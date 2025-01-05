@@ -1,16 +1,21 @@
 package me.rooyrooy.aooniJinrou.game
 
 
-import me.rooyrooy.aooniJinrou.Items
-import me.rooyrooy.aooniJinrou.gameKeyPlateSilver
-import me.rooyrooy.aooniJinrou.gameStart
+import me.rooyrooy.aooniJinrou.*
+import me.rooyrooy.aooniJinrou.chest.Chest
+import me.rooyrooy.aooniJinrou.job.hunter.Bow
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.Sound
+import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.entity.EntityShootBowEvent
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
@@ -19,6 +24,54 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
 
 class Event : Listener{
+    @EventHandler
+    fun onPlatePlace(event:BlockPlaceEvent){
+        val player = event.player
+        val block = event.block
+        val locationUnder = block.location
+        locationUnder.y -= 1
+        if (locationUnder == gameGateUnderFloor){
+            Bukkit.broadcastMessage("§e§l${player.name}§bが地下室を開放しました！")
+            Bukkit.getOnlinePlayers().forEach { it ->
+                it.playSound(
+                    it.location,
+                    Sound.ENTITY_PLAYER_LEVELUP,
+                    1.0f,
+                    1.0f
+                )
+            }
+        }else if (locationUnder == gameGateTopFloor){
+            Bukkit.broadcastMessage("§e§l${player.name}§bが最上階を開放しました！")
+            Bukkit.getOnlinePlayers().forEach {
+                it.playSound(
+                    it.location,
+                    Sound.ENTITY_PLAYER_LEVELUP,
+                    1.0f,
+                    1.0f
+                )
+            }
+            Chest().registerGoldKey()
+        }
+    }
+    @EventHandler
+    fun onProjectileHit(event: ProjectileHitEvent) {
+        val projectile = event.entity
+        if (projectile is Arrow) {
+            // ブロックに刺さったかどうかを確認
+            if (event.hitBlock != null) {
+                projectile.remove()
+            }
+        }
+    }
+    @EventHandler
+    fun onShoot(event:EntityShootBowEvent) {
+        val shooter = event.entity as Player
+        val bow = shooter.inventory.itemInMainHand
+        val arrow = event.projectile as Arrow
+        Bow(shooter).hunterCoolTime(bow,arrow)
+
+    }
+
     @EventHandler
     fun onDrop(event: PlayerDropItemEvent){
         val item = event.itemDrop.itemStack
@@ -36,21 +89,35 @@ class Event : Listener{
             }
         }
     }
+    @EventHandler
+    fun foodChange(event:PlayerMoveEvent){
+        val player = event.player
+        if (!gameStart){
+            FoodLevel(player).waitGame()
+            return
+        }
+        if (gameJobList[player] == "AOONI"){
+            FoodLevel(player).aooni()
+        }else{
+            FoodLevel(player).notAooni()
+        }
+    }
+
+    private fun hasKey(key:ItemStack){
+
+    }
     @EventHandler //青鬼の杖
-    fun onPlayerInteract(event: PlayerMoveEvent) {
+    fun aooniStickGet(event: PlayerMoveEvent) {
         if (gameStart) {
             val player = event.player
             // 防具が揃っているか確認
             if (hasFullDiamondArmor(player)) {
                 // 防具を1つずつ削除
                 removeDiamondArmor(player)
-
-                // ダイヤモンドを1個与える
                 val aooniStick = ItemStack(Material.BLAZE_ROD)
                 val aooniStickMeta = aooniStick.itemMeta
                 aooniStickMeta.displayName(Component.text("§1§l§n青鬼の杖§b(右クリックで変身)"))
                 val currentLore = aooniStickMeta.lore ?: mutableListOf()
-                // 新しい lore を追加
                 currentLore.add("§7青鬼の姿に変身！")
                 currentLore.add("§c§n1回の変身につき、2人まで§7ひろしを食べることができます。")
                 currentLore.add("§4§n30秒経つか、杖をもう一度右クリックすると、変身が解けます。")
@@ -58,29 +125,13 @@ class Event : Listener{
 
                 aooniStick.itemMeta = aooniStickMeta
                 player.inventory.addItem(aooniStick)
-
-                // プレイヤーに通知
                 player.sendMessage("§1§l§n青鬼の杖を手に入れました！(右クリックで発動)")
                 player.sendMessage("§c§n1回の変身につき、2人まで§7ひろしを食べることができます。")
                 player.sendMessage("§4§n30秒経つか、杖をもう一度右クリックすると、変身が解けます。")
             }
         }
     }
-    @EventHandler //鍵取得プレート
-    fun onPlateKey(event: PlayerInteractEvent) {
-        val player = event.player
-        // 圧力板を踏んだかどうかを確認
-        if (event.clickedBlock?.type == Material.STONE_PRESSURE_PLATE ||
-            event.clickedBlock?.type == Material.LIGHT_WEIGHTED_PRESSURE_PLATE ||
-            event.clickedBlock?.type == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
-        ) {
-            if (event.clickedBlock?.location != gameKeyPlateSilver) return
-            if (player.inventory.contents.filterNotNull().filter { it.type == Material.IRON_INGOT }.sumOf { it.amount } > 0) return
-            player.inventory.addItem(Items.KEY_SILVER.toItemStack())
-            player.sendMessage("§7§l§n銀の鍵を獲得しました！§e脱出には§7§l§n銀の鍵§eと§6§l§n金の鍵§eを合成して、§1§l§n青鬼の鍵§eを作る必要があります。")
 
-        }
-    }
     private fun hasFullDiamondArmor(player: Player): Boolean {
         val inventory = player.inventory
         val requiredArmor = listOf(

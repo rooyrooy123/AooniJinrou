@@ -1,8 +1,9 @@
-package me.rooyrooy.aooniJinrou.game
+package me.rooyrooy.aooniJinrou.job.aooni
 
 import com.saicone.rtag.util.SkullTexture
 import me.rooyrooy.aooniJinrou.PluginProvider.plugin
 import me.rooyrooy.aooniJinrou.gameAooniKillLimit
+import me.rooyrooy.aooniJinrou.gameJobList
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -15,7 +16,10 @@ class AooniTransform(val player: Player) {
     fun start(){
 // 各防具スロットに対応するアイテムを作成
         //     val helmet = createColoredLeatherArmor(Material.LEATHER_HELMET,Color.fromRGB(72, 61, 139))
-
+        if (gameJobList[player] != "HIROSHI"){
+            player.sendMessage("§1§l青鬼のみ使用可能")
+            return
+        }
         val chestPlate = createColoredLeatherArmor(Material.LEATHER_CHESTPLATE, Color.fromRGB(72, 61, 139))
         val leggings = createColoredLeatherArmor(Material.LEATHER_LEGGINGS, Color.fromRGB(72, 61, 139))
         val boots = createColoredLeatherArmor(Material.LEATHER_BOOTS, Color.fromRGB(72, 61, 139))
@@ -34,7 +38,7 @@ class AooniTransform(val player: Player) {
         player.sendMessage("§b§n杖をもう一度クリックするか、")
         player.sendMessage("§b§n30秒経過すると変身が解除できます。。")
         player.playSound(player.location,Sound.ITEM_ARMOR_EQUIP_DIAMOND,1.0F,1.0F)
-        player.playSound(player.location,Sound.ENTITY_WITHER_SPAWN,1.0F,1.0F)
+        player.playSound(player.location, Sound.ENTITY_WITHER_SPAWN, 1.0F, 1.0F)
 
         var timer = 0
         var taskId = Random().nextInt()
@@ -60,7 +64,7 @@ class AooniTransform(val player: Player) {
         inventory.boots = ItemStack(Material.AIR)
         invisibilityRemove(player)
         player.sendMessage("§1§l青鬼§4への変身が終了しました。")
-        player.playSound(player,Sound.ITEM_ARMOR_EQUIP_DIAMOND,1.0F,0.5F)
+        player.playSound(player.location,Sound.ITEM_ARMOR_EQUIP_DIAMOND,2.0F,0.5F)
         removeBlazeRod()
 
     }

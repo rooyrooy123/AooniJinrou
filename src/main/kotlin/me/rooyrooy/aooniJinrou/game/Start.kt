@@ -8,6 +8,10 @@ import org.bukkit.World
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 
+/**
+ * 間違ってダッシュするのを防ぐため、開始TP時に盲目と鈍足をつける
+ *
+ */
 class Start(world: World) {
     init {
         Reset()

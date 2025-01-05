@@ -15,9 +15,9 @@ AooniJinrou:
         [50,64,50]
       Gate:
         UnderFloor:
-          [50,60,60]
+          [280, 57, 89]
         TopFloor:
-          [30,80,10]
+          [242,75,82]
       Plate:
         SilverKey:
           [284, 83, 130]

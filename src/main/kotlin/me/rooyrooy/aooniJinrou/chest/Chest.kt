@@ -1,7 +1,11 @@
 package me.rooyrooy.aooniJinrou.chest
 
-import me.rooyrooy.aooniJinrou.gameChestFloor
+import me.rooyrooy.aooniJinrou.PluginProvider.plugin
+import me.rooyrooy.aooniJinrou.gameChestCount
+import me.rooyrooy.aooniJinrou.gameChestID
+import me.rooyrooy.aooniJinrou.gameChestIDCount
 import me.rooyrooy.aooniJinrou.gameWorld
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 
@@ -27,10 +31,25 @@ class Chest {
     }
     // データの登録を担当
     private fun registerChestData(location: Location, floor: String) {
-        val blockState = location.world?.getBlockAt(location)?.state ?: return
-        gameChestFloor[blockState] = floor
+      //  val blockState = location.world?.getBlockAt(location)?.state ?: return
+      //  gameChestFloor[blockState] = floor
+        val floorInt = floor.replace("Floor","").toInt()
+        BlockMetaData(plugin).addMetadata(location.block,"Floor","$floorInt")
+        if (floorInt >= 1){
+            gameChestIDCount += 1
+            gameChestID[gameChestIDCount] = location.block
+            BlockMetaData(plugin).addMetadata(location.block,"ID","$gameChestIDCount")
+        }
     }
-
+    fun registerGoldKey(){
+        Bukkit.broadcastMessage("§b1階から最上階までのどこかのチェストに§6§l§n金の鍵§bが配置されました！")
+        Bukkit.broadcastMessage("§7※場所はプレイヤーによって違います")
+        Bukkit.getOnlinePlayers().forEach {
+            val random = (1..gameChestIDCount).random()
+            val chest = gameChestID[random] ?: return
+            BlockMetaData(plugin).addMetadata(chest,"${it.uniqueId}","$random")
+        }
+    }
     fun breakALL(chestLocations: Map<String, List<List<Int>>>) {
         chestLocations.forEach { (_, coordinatesList) ->
             coordinatesList.forEach { coordinate ->
@@ -57,6 +76,8 @@ class Chest {
             }
         }
     }
+
+
 /*
     fun place(chestLocations: Map<String, List<List<Int>>>, selectFloor: Int) {
         val floorKey = "Floor$selectFloor"

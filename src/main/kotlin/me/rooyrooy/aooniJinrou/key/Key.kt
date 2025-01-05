@@ -1,16 +1,52 @@
 package me.rooyrooy.aooniJinrou.key
 
-import me.rooyrooy.aooniJinrou.Items
-import me.rooyrooy.aooniJinrou.gameKeyTopNeed
-import me.rooyrooy.aooniJinrou.gameKeyUnderNeed
+import me.rooyrooy.aooniJinrou.*
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerMoveEvent
 
 
-class Key{
+class Key : Listener{
+    @EventHandler//青鬼の館の鍵
+    fun aooniKey(event: PlayerMoveEvent){
+        if (!gameStart) return
+        val player = event.player
+        val silverKey = Items.KEY_SILVER.toItemStack()
+        val goldKey = Items.KEY_GOLD.toItemStack()
+        if (player.inventory.containsAtLeast(silverKey,1)) {
+            if (player.inventory.containsAtLeast(goldKey, 1)) {
+                player.inventory.remove(Items.KEY_GOLD.toItemStack())
+                player.inventory.remove(Items.KEY_SILVER.toItemStack())
+                player.inventory.addItem(Items.KEY_AOONI.toItemStack())
+                player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
+                player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP,1.0f,2.0f)
+            }
+        }
+
+    }
+    @EventHandler //鍵取得プレート
+    fun onPlateKey(event: PlayerInteractEvent) {
+        val player = event.player
+        // 圧力板を踏んだかどうかを確認
+        if (event.clickedBlock?.type == Material.STONE_PRESSURE_PLATE ||
+            event.clickedBlock?.type == Material.LIGHT_WEIGHTED_PRESSURE_PLATE ||
+            event.clickedBlock?.type == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+        ) {
+            if (event.clickedBlock?.location != gameKeyPlateSilver) return
+            if (player.inventory.contents.filterNotNull().filter { it.type == Material.IRON_INGOT }.sumOf { it.amount } > 0) return
+            player.inventory.addItem(Items.KEY_SILVER.toItemStack())
+            player.sendMessage("§7§l§n銀の鍵を獲得しました！§e脱出には§7§l§n銀の鍵§eと§6§l§n金の鍵§eを合成して、§1§l§n青鬼の鍵§eを作る必要があります。")
+            player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
+            player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP,1.0f,2.0f)
+
+        }
+    }
     fun get(player: Player){
         if (getAmount(player,Material.OAK_BUTTON) >= gameKeyUnderNeed){
             val consoleSender: ConsoleCommandSender = Bukkit.getServer().consoleSender
@@ -18,7 +54,7 @@ class Key{
 
             player.inventory.remove(Material.OAK_BUTTON)
             player.sendMessage("§e§l§n地下室への鍵を獲得しました！")
-            player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
+            player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
 
         }
         if (getAmount(player,Material.BLUE_CARPET) >= gameKeyTopNeed){
@@ -30,7 +66,7 @@ class Key{
             player.sendMessage("§e§l§n最上階への鍵を獲得しました！")
             //player.inventory.addItem(key)
             player.inventory.remove(Material.BLUE_CARPET)
-            player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
+            player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
         }
     }
     private fun getAmount(player: Player, material: Material) : Int{

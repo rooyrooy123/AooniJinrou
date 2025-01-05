@@ -1,12 +1,10 @@
 package me.rooyrooy.aooniJinrou.chest
 
 import me.rooyrooy.aooniJinrou.*
+import me.rooyrooy.aooniJinrou.PluginProvider.plugin
 import me.rooyrooy.aooniJinrou.key.Key
 import net.kyori.adventure.text.Component
-import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.World
+import org.bukkit.*
 import org.bukkit.entity.AreaEffectCloud
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -23,30 +21,36 @@ class ChestEvent : Listener {
 
         val blockEnderChest = location.world.getBlockAt(location)
 
-        val floorName = gameChestFloor[blockEnderChest.state] ?: return //Example: Floor4
+        //val floorName = gameChestFloor[blockEnderChest.state] ?: return //Example: Floor4
         val blockLoc = blockEnderChest.location
-        val floor = floorName.replace("Floor","").toInt()//ちぇすとの階層 INT
+        //val floor = floorName.replace("Floor","").toInt()//ちぇすとの階層 INT
+
+
+        val floor = BlockMetaData(plugin).getMetadata(blockEnderChest,"Floor")?.toInt()
+        val playerIDGoldKey =BlockMetaData(plugin).getMetadata(blockEnderChest,"${player.uniqueId}")
+        val chestID = BlockMetaData(plugin).getMetadata(blockEnderChest,"ID")
 
         if (gamePlayerChestOpened.contains("${player.uniqueId}.${blockLoc.x}.${blockLoc.y}.${blockLoc.z}")){
             val chestItem = Items.KEY_WARNING_ALREADY.toItemStack()
             player.enderChest.setItem(13, chestItem)
-
             //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
         }else {
             if (gameJobList[player] != "AOONI") {
-                if (floor in 1..4) { //1~4階層
+                if (floor != null) {
+                    if (floor >= 1) { //1~4階層
 
-                    val chestItem = Items.KEY_UNDERFLOOR_PARTS.toItemStack()  //これは1~4階のチェストだった場合
-                    player.enderChest.setItem(13, chestItem)
-                    //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
-                } else if (floor == -1) {
-                    val chestItem = Items.KEY_TOPFLOOR_PARTS.toItemStack()  //これは1~4階のチェストだった場合
-                    player.enderChest.setItem(13, chestItem)
-                    //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
+                        val chestItem = Items.KEY_UNDERFLOOR_PARTS.toItemStack()  //これは1~4階のチェストだった場合
+                        player.enderChest.setItem(13, chestItem)
+                        //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
+                    } else if (floor <= -1) {
+                        val chestItem = Items.KEY_TOPFLOOR_PARTS.toItemStack()  //これは地下1階のチェストだった場合
+                        player.enderChest.setItem(13, chestItem)
+                        //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
+                    }
                 }
             } else {
                 if (aooniCanGet(blockLoc)) {
-                    if (!gameChestEquipment.containsKey("${blockLoc.x}.${blockLoc.y}.${blockLoc.z}")) {
+                    if (!gameChestEquipment.containsKey("${blockLoc.x}.${blockLoc.y}.${blockLoc.z}")) { //ランダム装備を選ぶ
                         val equipments = arrayOf(
                             Material.DIAMOND_HELMET,
                             Material.DIAMOND_CHESTPLATE,
@@ -65,10 +69,15 @@ class ChestEvent : Listener {
                         ))
                     }
                     player.enderChest.setItem(13, chestItem)
-                } else {
+                } else { //もやもやAreaEffectCloudがあるとき、アイテム取得不可
                     val chestItem = Items.EQUIPMENT_WARNING.toItemStack()
                     player.enderChest.setItem(13, chestItem)
                 }
+            }
+        }
+        if (gameJobList[player] != "AOONI"){
+            if (playerIDGoldKey == chestID) {
+                player.enderChest.setItem(13, Items.KEY_GOLD.toItemStack())
             }
         }
     }
@@ -100,6 +109,13 @@ class ChestEvent : Listener {
         val location = clicker.openInventory.topInventory.location ?: return
         val blockEnderChest = location.world.getBlockAt(location)
         val blockLoc = blockEnderChest.location
+        if (clickedItem.type == Material.GOLD_INGOT){
+            clicker.playSound(clicker.location, Sound.ENTITY_ITEM_PICKUP,1.0f,1.0f)
+            clicker.playSound(clicker.location, Sound.ENTITY_PLAYER_LEVELUP,1.0f,1.0f)
+            clicker.sendMessage("§6§l§n金の鍵§bを獲得した！§7§l§n銀の鍵§bを持つと、§1l館の鍵§bを獲得できます！")
+            clicker.inventory.remove(Material.GOLD_INGOT)
+            clicker.inventory.addItem(clickedItem)
+        }
         if (clickedItem.type == Material.OAK_BUTTON
             || clickedItem.type == Material.BLUE_CARPET){ //ここで青鬼だった場合とそれ以外だった時の条件分岐をいれよう
             gamePlayerChestOpened.add("${clicker.uniqueId}.${blockLoc.x}.${blockLoc.y}.${blockLoc.z}")
