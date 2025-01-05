@@ -3,6 +3,7 @@ package me.rooyrooy.aooniJinrou.game
 import me.rooyrooy.aooniJinrou.PluginProvider.plugin
 import me.rooyrooy.aooniJinrou.gameStart
 import me.rooyrooy.aooniJinrou.gameTime
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import java.util.*
 
@@ -16,13 +17,15 @@ class Timer{
                 Bukkit.getScheduler().cancelTask(taskId)
             }
             if (gameTime == 900){
-                Bukkit.broadcastMessage("§b§l§n地下室が開放可能になりました！")
+                //Bukkit.broadcastMessage("§b§l§n地下室が開放可能になりました！")
+                Bukkit.broadcast(Component.text("§b§l§n地下室が開放可能になりました！"))
                 Bukkit.getOnlinePlayers().forEach {
                     player -> player.playSound(player.location,"block.piston.contract",1.0f,2.0f)
                 }
                 Gate().openUnder()
             }else if (gameTime == 600){
-                Bukkit.broadcastMessage("§e§l§n最上階が開放可能になりました！")
+                //Bukkit.broadcastMessage("§e§l§n最上階が開放可能になりました！")
+                Bukkit.broadcast(Component.text("§e§l§n最上階が開放可能になりました！"))
                 Bukkit.getOnlinePlayers().forEach {
                         player -> player.playSound(player.location,"block.piston.extend",1.0f,2.0f)
                 }

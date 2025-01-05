@@ -31,7 +31,8 @@ class Event : Listener{
         val locationUnder = block.location
         locationUnder.y -= 1
         if (locationUnder == gameGateUnderFloor){
-            Bukkit.broadcastMessage("§e§l${player.name}§bが地下室を開放しました！")
+            //Bukkit.broadcastMessage("§e§l${player.name}§bが地下室を開放しました！")
+            Bukkit.broadcast(Component.text("§e§l${player.name}§bが地下室を開放しました！"))
             Bukkit.getOnlinePlayers().forEach { it ->
                 it.playSound(
                     it.location,
@@ -41,7 +42,8 @@ class Event : Listener{
                 )
             }
         }else if (locationUnder == gameGateTopFloor){
-            Bukkit.broadcastMessage("§e§l${player.name}§bが最上階を開放しました！")
+            //Bukkit.broadcastMessage("§e§l${player.name}§bが最上階を開放しました！")
+            Bukkit.broadcast(Component.text("§e§l${player.name}§bが最上階を開放しました！"))
             Bukkit.getOnlinePlayers().forEach {
                 it.playSound(
                     it.location,
@@ -103,9 +105,7 @@ class Event : Listener{
         }
     }
 
-    private fun hasKey(key:ItemStack){
 
-    }
     @EventHandler //青鬼の杖
     fun aooniStickGet(event: PlayerMoveEvent) {
         if (gameStart) {

@@ -3,12 +3,12 @@ package me.rooyrooy.aooniJinrou
 import me.rooyrooy.aooniJinrou.chest.Chest
 import me.rooyrooy.aooniJinrou.chest.ChestEvent
 import me.rooyrooy.aooniJinrou.chest.ChestExtractLocations
-import me.rooyrooy.aooniJinrou.job.aooni.AooniStick
 import me.rooyrooy.aooniJinrou.game.Damage
 import me.rooyrooy.aooniJinrou.game.Event
 import me.rooyrooy.aooniJinrou.game.Gate
 import me.rooyrooy.aooniJinrou.game.Timer
 import me.rooyrooy.aooniJinrou.job.JobGive
+import me.rooyrooy.aooniJinrou.job.aooni.AooniStick
 import me.rooyrooy.aooniJinrou.key.Key
 import me.rooyrooy.aooniJinrou.setting.ChestSetting
 import me.rooyrooy.aooniJinrou.setting.GuiSetting
@@ -17,7 +17,6 @@ import org.bukkit.Bukkit.getOnlinePlayers
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.block.BlockState
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player

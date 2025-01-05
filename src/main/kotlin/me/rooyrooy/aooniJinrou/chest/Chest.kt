@@ -1,10 +1,10 @@
 package me.rooyrooy.aooniJinrou.chest
 
 import me.rooyrooy.aooniJinrou.PluginProvider.plugin
-import me.rooyrooy.aooniJinrou.gameChestCount
 import me.rooyrooy.aooniJinrou.gameChestID
 import me.rooyrooy.aooniJinrou.gameChestIDCount
 import me.rooyrooy.aooniJinrou.gameWorld
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -42,8 +42,11 @@ class Chest {
         }
     }
     fun registerGoldKey(){
-        Bukkit.broadcastMessage("§b1階から最上階までのどこかのチェストに§6§l§n金の鍵§bが配置されました！")
-        Bukkit.broadcastMessage("§7※場所はプレイヤーによって違います")
+        //Bukkit.broadcastMessage("§b1階から最上階までのどこかのチェストに§6§l§n金の鍵§bが配置されました！")
+        //Bukkit.broadcastMessage("§7※場所はプレイヤーによって違います")
+        Bukkit.broadcast(Component.text("§b1階から最上階までのどこかのチェストに§6§l§n金の鍵§bが配置されました！"))
+        Bukkit.broadcast(Component.text("§7※場所はプレイヤーによって違います"))
+
         Bukkit.getOnlinePlayers().forEach {
             val random = (1..gameChestIDCount).random()
             val chest = gameChestID[random] ?: return
