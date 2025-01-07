@@ -1,9 +1,6 @@
 package me.rooyrooy.aooniJinrou.game
 
-import me.rooyrooy.aooniJinrou.gameChestCount
-import me.rooyrooy.aooniJinrou.gameKeyTopNeed
-import me.rooyrooy.aooniJinrou.gameKeyUnderNeed
-import me.rooyrooy.aooniJinrou.gameWorld
+import me.rooyrooy.aooniJinrou.*
 import org.bukkit.World
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
@@ -16,7 +13,8 @@ class Start(world: World) {
     init {
         Reset()
         gameWorld = world
-        setupChestCount()
+        gameStart = true
+        //setupChestCount()
     }
 }
 fun setupChestCount() {

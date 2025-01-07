@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.inventory.ItemStack
 
 
 class Key : Listener{
@@ -26,6 +27,8 @@ class Key : Listener{
                 player.inventory.addItem(Items.KEY_AOONI.toItemStack())
                 player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
                 player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP,1.0f,2.0f)
+                player.sendMessage("§1§l§n青鬼の鍵§eの合成に成功しました！")
+                player.sendMessage("§b残り時間120秒から脱出が可能になります！")
             }
         }
 
@@ -48,7 +51,7 @@ class Key : Listener{
         }
     }
     fun get(player: Player){
-        if (getAmount(player,Material.OAK_BUTTON) >= gameKeyUnderNeed){
+        if ( player.inventory.containsAtLeast(Items.KEY_UNDERFLOOR_PARTS.toItemStack(), gameKeyUnderNeed)){
             val consoleSender: ConsoleCommandSender = Bukkit.getServer().consoleSender
             Bukkit.getServer().dispatchCommand(consoleSender, "give ${player.name} oak_pressure_plate{CanPlaceOn:[\"minecraft:obsidian\"],display:{Name:'{\"text\":\"地下室の鍵\",\"color\":\"yellow\",\"bold\":true,\"italic\":false,\"underlined\":true}',Lore:['{\"text\":\"地下室解放可能時刻を過ぎると、設置可能に\",\"color\":\"gray\",\"italic\":false}']}} 1")
 
@@ -57,10 +60,10 @@ class Key : Listener{
             player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
 
         }
-        if (getAmount(player,Material.BLUE_CARPET) >= gameKeyTopNeed){
+        if (player.inventory.containsAtLeast(Items.KEY_TOPFLOOR_PARTS.toItemStack(), gameKeyTopNeed)){
 
             val consoleSender: ConsoleCommandSender = Bukkit.getServer().consoleSender
-            Bukkit.getServer().dispatchCommand(consoleSender, "give ${player.name} blue_wool{CanPlaceOn:[\"minecraft:gold_block\"],display:{Name:'{\"text\":\"最上階への鍵\",\"color\":\"dark_blue\",\"bold\":true,\"italic\":false,\"underlined\":true}',Lore:['{\"text\":\"最上階解放可能時刻を過ぎると、設置可能に\",\"color\":\"gray\",\"italic\":false}']}} 1")
+            Bukkit.getServer().dispatchCommand(consoleSender, "give ${player.name} blue_wool{CanPlaceOn:[\"minecraft:gold_block\"],display:{Name:'{\"text\":\"最上階への鍵\",\"color\":\"blue\",\"bold\":true,\"italic\":false,\"underlined\":true}',Lore:['{\"text\":\"最上階解放可能時刻を過ぎると、設置可能に\",\"color\":\"gray\",\"italic\":false}']}} 1")
 
 
             player.sendMessage("§e§l§n最上階への鍵を獲得しました！")
@@ -69,14 +72,6 @@ class Key : Listener{
             player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
         }
     }
-    private fun getAmount(player: Player, material: Material) : Int{
-        var amount = 0
-        for (item in player.inventory.contents){
-            if (item?.type == material){
-                amount ++
-            }
-        }
-        return  amount
-    }
+
 
 }

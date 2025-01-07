@@ -1,9 +1,7 @@
 package me.rooyrooy.aooniJinrou.chest
 
+import me.rooyrooy.aooniJinrou.*
 import me.rooyrooy.aooniJinrou.PluginProvider.plugin
-import me.rooyrooy.aooniJinrou.gameChestID
-import me.rooyrooy.aooniJinrou.gameChestIDCount
-import me.rooyrooy.aooniJinrou.gameWorld
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -37,8 +35,11 @@ class Chest {
         BlockMetaData(plugin).addMetadata(location.block,"Floor","$floorInt")
         if (floorInt >= 1){
             gameChestIDCount += 1
+            gameKeyUnderNeed += 1
             gameChestID[gameChestIDCount] = location.block
             BlockMetaData(plugin).addMetadata(location.block,"ID","$gameChestIDCount")
+        }else{
+            gameKeyTopNeed += 1
         }
     }
     fun registerGoldKey(){

@@ -16,7 +16,7 @@ class AooniTransform(val player: Player) {
     fun start(){
 // 各防具スロットに対応するアイテムを作成
         //     val helmet = createColoredLeatherArmor(Material.LEATHER_HELMET,Color.fromRGB(72, 61, 139))
-        if (gameJobList[player] != "HIROSHI"){
+        if (gameJobList[player] != "AOONI"){
             player.sendMessage("§1§l青鬼のみ使用可能")
             return
         }
@@ -37,8 +37,11 @@ class AooniTransform(val player: Player) {
         player.sendMessage("§b1回の変身で§c§n2人§bまでキルが可能です！")
         player.sendMessage("§b§n杖をもう一度クリックするか、")
         player.sendMessage("§b§n30秒経過すると変身が解除できます。。")
+        //player.playSound(player,Sound.ITEM_ARMOR_EQUIP_DIAMOND,1.0F,1.0F)
+        //player.playSound(player, Sound.ENTITY_WITHER_SPAWN, 1.0F, 1.0F)
+
         player.playSound(player.location,Sound.ITEM_ARMOR_EQUIP_DIAMOND,1.0F,1.0F)
-        player.playSound(player.location, Sound.ENTITY_WITHER_SPAWN, 1.0F, 1.0F)
+        player.playSound(player.location,Sound.ENTITY_WITHER_SPAWN, 1.0F, 1.0F)
 
         var timer = 0
         var taskId = Random().nextInt()

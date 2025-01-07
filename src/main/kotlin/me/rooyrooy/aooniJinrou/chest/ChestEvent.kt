@@ -64,8 +64,9 @@ class ChestEvent : Listener {
                     chestItem.editMeta { meta ->
                         meta.displayName(Component.text("§9§l§n青鬼装備の欠片")) // 名前を設定
                         meta.lore(listOf(
-                            Component.text("§7装備を取得すると、エンダーチェストが赤く変化します！"),
-                            Component.text("§7頭・鎧・ズボン・靴の4種類を集めると、青鬼の杖を獲得(青鬼に一定時間変身)！")
+                            Component.text("§7装備を取得すると、チェストが赤く変化！"),
+                            Component.text("§7頭・鎧・ズボン・靴の4種類を集めると、"),
+                            Component.text(("青鬼に一定時間変身！"))
                         ))
                     }
                     player.enderChest.setItem(13, chestItem)
@@ -134,10 +135,11 @@ class ChestEvent : Listener {
         }
 
         clicker.inventory.addItem(clickedItem)
+        clicker.playSound(clicker.location,Sound.ENTITY_ITEM_PICKUP,1.0f,0.5f)
         clicker.enderChest.clear()
         if (gameJobList[clicker] == "AOONI") { //青鬼が装備とったら、もやもや発生
             blockLoc.y += 1
-            ChestParticle(blockLoc).startTimer()
+            ChestParticle().startTimer(blockLoc)
         }
         // 同じエンダーチェストを開いているすべてのプレイヤーを取得
         val players = Bukkit.getOnlinePlayers().filter { player ->

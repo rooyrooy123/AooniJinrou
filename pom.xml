@@ -103,10 +103,22 @@
             <id>Jitpack</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
 
     </repositories>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core -->
+        <!-- Kotlin Coroutines Core -->
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+            <version>1.7.3</version>
+        </dependency>
+
         <dependency>
             <groupId>com.saicone.rtag</groupId>
             <artifactId>rtag</artifactId>

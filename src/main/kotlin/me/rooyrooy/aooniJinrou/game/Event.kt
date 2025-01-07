@@ -14,18 +14,35 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
 
 class Event : Listener{
+
     @EventHandler
-    fun onPlatePlace(event:BlockPlaceEvent){
+    fun onSignClick(event: PlayerInteractEvent) {
+        val player = event.player
+        val clickedBlock = event.clickedBlock ?: return
+
+        // 右クリック + 看板かどうかチェック
+        if (event.action.name.contains("RIGHT_CLICK") &&
+            (clickedBlock.type == Material.OAK_SIGN || clickedBlock.type == Material.OAK_WALL_SIGN)) {
+            Sign(clickedBlock.location).entranceTeleport(player)
+            Sign(clickedBlock.location).escape(player)
+            Sign(clickedBlock.location).entranceReturn(player)
+        }
+
+    }
+    @EventHandler
+    fun onGateOpen(event:BlockPlaceEvent){
         val player = event.player
         val block = event.block
         val locationUnder = block.location
@@ -71,9 +88,17 @@ class Event : Listener{
         val bow = shooter.inventory.itemInMainHand
         val arrow = event.projectile as Arrow
         Bow(shooter).hunterCoolTime(bow,arrow)
+        Bow(shooter).aooniShoot(arrow)
 
     }
-
+    @EventHandler
+    fun onHealthRegen(event: EntityRegainHealthEvent) {
+        if (!gameStart) return
+        // プレイヤーであり、自然回復の場合キャンセル
+        if (event.regainReason == EntityRegainHealthEvent.RegainReason.SATIATED) {
+            event.isCancelled = true
+        }
+    }
     @EventHandler
     fun onDrop(event: PlayerDropItemEvent){
         val item = event.itemDrop.itemStack

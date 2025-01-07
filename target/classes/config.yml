@@ -9,6 +9,12 @@ AooniJinrou:
     Game:
       Time: 1200
       World: world
+    HideBall: #隠し玉 tick数
+      Aooni: 600
+      HIROSHI: 300
+      MIKA: 300
+      TAKESHI: 300
+      TAKUROU: 300
   Location:
     world:
       Start:
@@ -18,6 +24,16 @@ AooniJinrou:
           [280, 57, 89]
         TopFloor:
           [242,75,82]
+      Sign:
+        Entrance:
+          Block: #玄関のオークの看板の座標(あらかじめ設置必須)
+            [250, 59, 70]
+          Teleport: #玄関のオークの看板のテレポート先の座標
+            [250, 58, 67]
+          Return: #外から玄関に戻る看板
+            [250, 59, 68]
+        Escape: #脱出のオークの看板の座標(あらかじめ設置必須)
+          [250, 60, 29]
       Plate:
         SilverKey:
           [284, 83, 130]

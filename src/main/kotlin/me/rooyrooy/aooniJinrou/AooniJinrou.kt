@@ -3,9 +3,8 @@ package me.rooyrooy.aooniJinrou
 import me.rooyrooy.aooniJinrou.chest.Chest
 import me.rooyrooy.aooniJinrou.chest.ChestEvent
 import me.rooyrooy.aooniJinrou.chest.ChestExtractLocations
-import me.rooyrooy.aooniJinrou.game.Damage
-import me.rooyrooy.aooniJinrou.game.Event
-import me.rooyrooy.aooniJinrou.game.Gate
+import me.rooyrooy.aooniJinrou.chest.PluginInstance
+import me.rooyrooy.aooniJinrou.game.*
 import me.rooyrooy.aooniJinrou.game.Timer
 import me.rooyrooy.aooniJinrou.job.JobGive
 import me.rooyrooy.aooniJinrou.job.aooni.AooniStick
@@ -16,11 +15,14 @@ import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getOnlinePlayers
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 //初期設定
@@ -30,6 +32,7 @@ var gamePlayerChestOpened : ArrayList<String> = arrayListOf()
 var gameChestEquipment : MutableMap<String, Material> = mutableMapOf()
 var gameChestIDCount = 0
 var gameChestID : MutableMap<Int,Block> = mutableMapOf()
+val gameAreaEffectCloudDurationSpeed : MutableMap<UUID,Int> = mutableMapOf()
 var gameJobList : MutableMap<Player,String> = mutableMapOf()
 var gameKeyUnderNeed = 0
 var gameKeyTopNeed = 0
@@ -38,10 +41,15 @@ var gameChestCount : MutableMap<Int,Int> = mutableMapOf()
 var gameWorld = Bukkit.getWorld("world")
 var gameTime = 0
 var gameKeyPlateSilver = Location(gameWorld,0.0,0.0,0.0)
+var gameAooniKillCount : MutableMap<Player,Int> = mutableMapOf()
 var gameAooniKillLimit : MutableMap<Player,Int> = mutableMapOf()
 var gameGateUnderFloor = Location(gameWorld , 0.0,0.0,0.0)
 var gameGateTopFloor = Location(gameWorld , 0.0,0.0,0.0)
-
+var gameSignEntrance = Location(gameWorld,0.0,0.0,0.0) //玄関看板
+var gameSignEntranceTeleport = Location(gameWorld,0.0,0.0,0.0) //玄関看板TP先
+var gameSignEscape = Location(gameWorld,0.0,0.0,0.0) //脱出看板
+var gameSignEntranceReturn = Location(gameWorld,0.0,0.0,0.0)
+var gameHideBallCount : MutableMap<Player,Int> = mutableMapOf()
 class AooniJinrou : JavaPlugin() {
     private lateinit var chestLocations: Map<String, List<List<Int>>>
     override fun onEnable() {
@@ -52,6 +60,8 @@ class AooniJinrou : JavaPlugin() {
         server.pluginManager.registerEvents(Damage(), this)
         server.pluginManager.registerEvents(AooniStick(), this)
         server.pluginManager.registerEvents(Key(), this)
+        server.pluginManager.registerEvents(HideBall(), this)
+        PluginInstance.plugin = this
 
         //リセ時の処理
         val worldString = config.getString("AooniJinrou.Setting.Game.World") ?: "world"
@@ -63,10 +73,36 @@ class AooniJinrou : JavaPlugin() {
         gameGateUnderFloor =  getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Gate.UnderFloor")
         gameGateTopFloor =  getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Gate.TopFloor")
         gameKeyPlateSilver = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Plate.SilverKey")
-        Gate().setup()
+        gameSignEntrance = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Entrance.Block")
+        gameSignEntranceTeleport = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Entrance.Teleport")
+        gameSignEscape = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Escape")
+        gameSignEntranceReturn = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Entrance.Return")
+        Sign(gameSignEntrance).setSignText(arrayListOf(
+            "§b§l看板右クリックで",
+            "§b§l館の外に出る。",
+            "§9§l§n脱出には青鬼の鍵必須",
+            "§c§l§n(残り時間120秒から)"))
+        Sign(gameSignEscape).setSignText(arrayListOf(
+            "§b§l看板右クリックで",
+            "§b§l§n脱出する！",
+            "§4§l§n脱出には",
+            "§1§l§n青鬼の鍵§4§lの所持必須！"))
+        Sign(gameSignEntranceReturn).setSignText(arrayListOf(
+            "",
+            "§b§l看板右クリックで",
+            "§b§玄関に戻る",
+            ""
+        ))
         //すたーとじのしょり
         Timer().start(gameTime)
         Chest().placeAll(chestLocations)
+        Bukkit.getOnlinePlayers().forEach {
+            gameJobList[it] = "HIROSHI"
+            val countHideBall = config.getInt("AooniJinrou.Setting.HideBall.${gameJobList[it]}")
+            gameHideBallCount[it] = countHideBall
+            it.inventory.addItem(Items.HIDEBALL.toItemStack())
+        }
+        ActionBar().start()
 
     }
     private fun getLocationFromCoordinate(path: String): Location {
@@ -99,7 +135,11 @@ class AooniJinrou : JavaPlugin() {
             Chest().place(chestLocations,args[0].toInt())
             return true
         }*/
-
+        if (cmd.name.equals("aoonijinrou-start", ignoreCase = true)){ //
+            Start(gameWorld!!)
+            Bukkit.broadcastMessage("start")
+            return true
+        }
         if (cmd.name.equals("aoonijinrou-setting", ignoreCase = true)){ // #/shop items
             val player = Bukkit.getPlayer(sender.name) ?: return false
             GuiSetting(config).open(player)
@@ -169,6 +209,7 @@ class AooniJinrou : JavaPlugin() {
     override fun onDisable() {
         // Plugin shutdown logic
         //ChestBreak(config).breakAll()
+        gameStart = false
         Chest().breakALL(chestLocations)
     }
 
