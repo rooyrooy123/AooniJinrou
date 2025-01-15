@@ -3,11 +3,9 @@ package me.rooyrooy.aooniJinrou.chat
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
-import com.comphenix.protocol.wrappers.WrappedDataValue
 import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject
 import com.github.justadeni.standapi.PacketStand
-import com.google.common.collect.Lists
 import me.rooyrooy.aooniJinrou.chest.PluginInstance.plugin
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -16,7 +14,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChatEvent
-import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 
@@ -82,19 +79,5 @@ private fun spawnEntityForPlayer(player: Player, location: Location, type: Entit
 
 }
 
-private fun hideEntityForPlayer(player: Player, entityId: Int) {
-    val packet = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
-
-    // Writing the entity ID to be destroyed
-    packet.intLists.write(0, listOf(entityId))
-
-    // Send the packet to the specific player to hide the entity
-    try {
-        ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet)
-    } catch (e: InvocationTargetException) {
-        e.printStackTrace()
-    }
-
-}
 
 
