@@ -2,6 +2,7 @@ name: AooniJinrou
 version: '1.0-SNAPSHOT'
 main: me.rooyrooy.aooniJinrou.AooniJinrou
 api-version: '1.19'
+depend: [LunaChat,ProtocolLib,StandAPI, kLib]
 commands:
   aoonijinrou-start:
     usage: <command>
@@ -16,4 +17,6 @@ commands:
   aoonijinrou-setting-chest-check:
     usage: <command> <true/false>チェスト設置場所の発光のON/OFF
   aoonijinrou-chest-place-all:
+    usage: <command>
+  armorstand:
     usage: <command>

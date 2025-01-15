@@ -1,5 +1,14 @@
 package me.rooyrooy.aooniJinrou
 
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.ProtocolManager
+import com.github.justadeni.standapi.PacketStand
+import com.github.justadeni.standapi.PacketStand.Companion.fromRealStand
+import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
+import com.github.ucchyocean.lc3.japanize.IMEConverter
+import com.github.ucchyocean.lc3.japanize.YukiKanaConverter
+import me.rooyrooy.aooniJinrou.chat.OnChat
+
 import me.rooyrooy.aooniJinrou.chest.Chest
 import me.rooyrooy.aooniJinrou.chest.ChestEvent
 import me.rooyrooy.aooniJinrou.chest.ChestExtractLocations
@@ -12,17 +21,17 @@ import me.rooyrooy.aooniJinrou.key.Key
 import me.rooyrooy.aooniJinrou.setting.ChestSetting
 import me.rooyrooy.aooniJinrou.setting.GuiSetting
 import org.bukkit.Bukkit
+import org.bukkit.Bukkit.broadcastMessage
 import org.bukkit.Bukkit.getOnlinePlayers
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 //初期設定
@@ -52,6 +61,7 @@ var gameSignEntranceReturn = Location(gameWorld,0.0,0.0,0.0)
 var gameHideBallCount : MutableMap<Player,Int> = mutableMapOf()
 class AooniJinrou : JavaPlugin() {
     private lateinit var chestLocations: Map<String, List<List<Int>>>
+    private lateinit var protocolManager: ProtocolManager
     override fun onEnable() {
         // Plugin startup logic
         saveDefaultConfig()
@@ -61,7 +71,11 @@ class AooniJinrou : JavaPlugin() {
         server.pluginManager.registerEvents(AooniStick(), this)
         server.pluginManager.registerEvents(Key(), this)
         server.pluginManager.registerEvents(HideBall(), this)
+        server.pluginManager.registerEvents(OnChat(),this)
+        protocolManager = ProtocolLibrary.getProtocolManager()
+
         PluginInstance.plugin = this
+
 
         //リセ時の処理
         val worldString = config.getString("AooniJinrou.Setting.Game.World") ?: "world"
@@ -103,6 +117,13 @@ class AooniJinrou : JavaPlugin() {
             it.inventory.addItem(Items.HIDEBALL.toItemStack())
         }
         ActionBar().start()
+        val romajiText = "riro-dogakannryou"
+        val jp = YukiKanaConverter.conv(romajiText)
+        broadcastMessage(jp)
+        val kanji = IMEConverter.convByGoogleIME(jp)
+        broadcastMessage(kanji)
+
+
 
     }
     private fun getLocationFromCoordinate(path: String): Location {
@@ -120,10 +141,31 @@ class AooniJinrou : JavaPlugin() {
         }else{
             return Location(gameWorld, 0.0, 64.0, 0.0)
         }
+
     }
     // リスト形式の座標を取得
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String> ): Boolean {
+
+        if (cmd.name.equals("armorstand", ignoreCase = true)) { // #/shop items
+            var testStand: PacketStand? = null
+            var realStand: ArmorStand? = null
+            var serializedString: String = ""
+            val player = Bukkit.getPlayer(sender.name) ?: return false
+            val location = player.location
+            sender.sendMessage("stand spawned!")
+            testStand = PacketStand(location , "StandAPI_test")
+            sender.sendMessage("stand metadata sent")
+            //testStand!!.setGlowingEffect(true)
+            //testStand!!.setArms(true)
+            testStand.setSmall(true)
+            testStand.setBaseplate(false)
+            testStand.setCustomNameVisible(true)
+            testStand.setCustomName("test name")
+            testStand.setVisible(false)
+            testStand.toRealStand()
+
+        }
         if (cmd.name.equals("aoonijinrou-chest-place-all", ignoreCase = true)){ // #/shop items
             //ChestPlace(config).placeAll()
             Chest().placeAll(chestLocations)
