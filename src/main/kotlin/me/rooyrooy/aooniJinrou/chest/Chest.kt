@@ -34,9 +34,9 @@ class Chest {
         val floorInt = floor.replace("Floor","").toInt()
         BlockMetaData(plugin).addMetadata(location.block,"Floor","$floorInt")
         if (floorInt >= 1){
-            gameChestIDCount += 1
+            gameChestIDCount += 1 //IDのMAX値をカウント
             gameKeyUnderNeed += 1
-            gameChestID[gameChestIDCount] = location.block
+            gameChestID[gameChestIDCount] = location.block //IDと紐づけ
             BlockMetaData(plugin).addMetadata(location.block,"ID","$gameChestIDCount")
         }else{
             gameKeyTopNeed += 1

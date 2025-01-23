@@ -2,11 +2,17 @@ package me.rooyrooy.aooniJinrou.game
 
 import kotlinx.coroutines.*
 import me.rooyrooy.aooniJinrou.Items
+import me.rooyrooy.aooniJinrou.PluginProvider.plugin
 import me.rooyrooy.aooniJinrou.gameHideBallCount
+import me.rooyrooy.aooniJinrou.job.giveItemToNonMainHandSlot
+import org.bukkit.Bukkit
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemHeldEvent
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 class HideBall : Listener{
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -16,11 +22,12 @@ class HideBall : Listener{
         val inventory = player.inventory
         val mainHandSlot = event.newSlot
         val mainHandItem = inventory.getItem(mainHandSlot)
-        if (gameHideBallCount[player]!! <= 0){
-            player.sendMessage("§4隠し玉の持ち時間がありません！")
-            return
-        }
+
         if (mainHandItem?.type == Items.HIDEBALL.toItemStack().type) {
+            if (gameHideBallCount[player]!! <= 0){
+                player.sendMessage("§4隠し玉の持ち時間がありません！")
+                return
+            }
             var placed = false
 
             // 他のホットバーの空きスロットに火薬を設置
@@ -35,6 +42,10 @@ class HideBall : Listener{
                 return
             }
             player.inventory.remove(mainHandItem)
+            player.playSound(player.location, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE  ,1.0f,2.0f)
+            val invisibilityEffect = PotionEffect(PotionEffectType.INVISIBILITY, 100000, 100)
+            invisibilityEffect.withParticles(false)
+            player.addPotionEffect(invisibilityEffect)
             startCountDown(player)
         } else if (mainHandItem?.type == Items.HIDEBALL_OFF.toItemStack().type) {
             stop(player)
@@ -57,7 +68,12 @@ class HideBall : Listener{
         }
     }
     private fun stop(player: Player){
-        player.inventory.remove(Items.HIDEBALL_OFF.toItemStack())
-        player.inventory.addItem(Items.HIDEBALL.toItemStack())
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            player.inventory.remove(Items.HIDEBALL_OFF.toItemStack())
+
+            giveItemToNonMainHandSlot(player,Items.HIDEBALL.toItemStack())
+            player.removePotionEffect(PotionEffectType.INVISIBILITY)
+            player.playSound(player.location, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1.0f, 1.0f)
+        })
     }
 }

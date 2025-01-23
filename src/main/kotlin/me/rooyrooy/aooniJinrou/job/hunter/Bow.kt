@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.rooyrooy.aooniJinrou.Items
 import me.rooyrooy.aooniJinrou.gameJobList
 import me.rooyrooy.aooniJinrou.gameStart
 import org.bukkit.Material
@@ -22,11 +23,11 @@ class Bow (private val shooter: Player){
         scope.launch {
             while (!arrow.isDead) { //こｔちは非同期処理で矢にパーティクルを生成
                 val location = arrow.location
-                location.world?.spawnParticle(Particle.LAVA, location, 3, 0.5, 0.5, 0.5, 0.1)
+                location.world?.spawnParticle(Particle.LAVA, location, 3, 0.0, 0.0, 0.0, 0.0)
                 delay(50L)
             }
             delay(5 * 1000L) //こっちは同期処理で5びょうごに矢を配布する
-            shooter.inventory.addItem(ItemStack(Material.ARROW,1))
+            shooter.inventory.addItem(Items.ARROW.toItemStack())
         }
     }
     fun aooniShoot(arrow: Arrow){
@@ -37,7 +38,7 @@ class Bow (private val shooter: Player){
         scope.launch {
             while (!arrow.isDead) { //こｔちは非同期処理で矢にパーティクルを生成
                 val location = arrow.location
-                location.world?.spawnParticle(Particle.FLAME, location, 3, 0.5, 0.5, 0.5, 0.1)
+                location.world?.spawnParticle(Particle.FLAME, location, 3, 0.0, 0.0, 0.0, 0.0)
                 delay(50L)
             }
         }

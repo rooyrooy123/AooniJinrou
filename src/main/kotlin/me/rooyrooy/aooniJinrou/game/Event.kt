@@ -135,7 +135,9 @@ class Event : Listener{
     fun aooniStickGet(event: PlayerMoveEvent) {
         if (gameStart) {
             val player = event.player
+            if (gameJobList[player] != "AOONI") return
             // 防具が揃っているか確認
+
             if (hasFullDiamondArmor(player)) {
                 // 防具を1つずつ削除
                 removeDiamondArmor(player)

@@ -1,10 +1,15 @@
 package me.rooyrooy.aooniJinrou.key
 
+import de.tr7zw.nbtapi.NBTItem
 import me.rooyrooy.aooniJinrou.*
+import net.kyori.adventure.text.Component
+import net.minecraft.nbt.NBTTagList
+import net.minecraft.nbt.NBTTagString
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.command.ConsoleCommandSender
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -17,7 +22,9 @@ class Key : Listener{
     @EventHandler//青鬼の館の鍵
     fun aooniKey(event: PlayerMoveEvent){
         if (!gameStart) return
+
         val player = event.player
+        if (gameJobList[player] == "AOONI" || gameJobList[player] == "MIKA") return
         val silverKey = Items.KEY_SILVER.toItemStack()
         val goldKey = Items.KEY_GOLD.toItemStack()
         if (player.inventory.containsAtLeast(silverKey,1)) {
@@ -52,18 +59,18 @@ class Key : Listener{
     }
     fun get(player: Player){
         if ( player.inventory.containsAtLeast(Items.KEY_UNDERFLOOR_PARTS.toItemStack(), gameKeyUnderNeed)){
-            val consoleSender: ConsoleCommandSender = Bukkit.getServer().consoleSender
-            Bukkit.getServer().dispatchCommand(consoleSender, "give ${player.name} oak_pressure_plate{CanPlaceOn:[\"minecraft:obsidian\"],display:{Name:'{\"text\":\"地下室の鍵\",\"color\":\"yellow\",\"bold\":true,\"italic\":false,\"underlined\":true}',Lore:['{\"text\":\"地下室解放可能時刻を過ぎると、設置可能に\",\"color\":\"gray\",\"italic\":false}']}} 1")
-
+//            val consoleSender: ConsoleCommandSender = Bukkit.getServer().consoleSender
+//            Bukkit.getServer().dispatchCommand(consoleSender, "give ${player.name} oak_pressure_plate{CanPlaceOn:[\"minecraft:obsidian\"],display:{Name:'{\"text\":\"地下室の鍵\",\"color\":\"yellow\",\"bold\":true,\"italic\":false,\"underlined\":true}',Lore:['{\"text\":\"地下室解放可能時刻を過ぎると、設置可能に\",\"color\":\"gray\",\"italic\":false}']}} 1")
+            player.inventory.addItem(Items.KEY_UNDERFLOOR.toItemStack())
             player.inventory.remove(Material.OAK_BUTTON)
             player.sendMessage("§e§l§n地下室への鍵を獲得しました！")
             player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP,1.0f,2.0f)
 
         }
         if (player.inventory.containsAtLeast(Items.KEY_TOPFLOOR_PARTS.toItemStack(), gameKeyTopNeed)){
-
-            val consoleSender: ConsoleCommandSender = Bukkit.getServer().consoleSender
-            Bukkit.getServer().dispatchCommand(consoleSender, "give ${player.name} blue_wool{CanPlaceOn:[\"minecraft:gold_block\"],display:{Name:'{\"text\":\"最上階への鍵\",\"color\":\"blue\",\"bold\":true,\"italic\":false,\"underlined\":true}',Lore:['{\"text\":\"最上階解放可能時刻を過ぎると、設置可能に\",\"color\":\"gray\",\"italic\":false}']}} 1")
+            player.inventory.addItem(Items.KEY_TOPFLOOR.toItemStack())
+            //val consoleSender: ConsoleCommandSender = Bukkit.getServer().consoleSender
+            //Bukkit.getServer().dispatchCommand(consoleSender, "give ${player.name} blue_wool{CanPlaceOn:[\"minecraft:gold_block\"],display:{Name:'{\"text\":\"最上階への鍵\",\"color\":\"blue\",\"bold\":true,\"italic\":false,\"underlined\":true}',Lore:['{\"text\":\"最上階解放可能時刻を過ぎると、設置可能に\",\"color\":\"gray\",\"italic\":false}']}} 1")
 
 
             player.sendMessage("§e§l§n最上階への鍵を獲得しました！")
@@ -75,3 +82,4 @@ class Key : Listener{
 
 
 }
+

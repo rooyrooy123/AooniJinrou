@@ -1,5 +1,6 @@
 package me.rooyrooy.aooniJinrou.job.aooni
 
+import me.rooyrooy.aooniJinrou.gameJobList
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
@@ -13,6 +14,8 @@ import org.bukkit.inventory.ItemFlag
 class AooniStick : Listener {
     @EventHandler
     fun onBlazeRod(event: PlayerInteractEvent) {
+        val player = event.player
+        if (gameJobList[player] != "AOONI") return
         if (event.hand != EquipmentSlot.HAND) return
         val item = event.item ?: return
         if (item.type == Material.BLAZE_ROD) {
@@ -20,7 +23,7 @@ class AooniStick : Listener {
             when (event.action) {
                 org.bukkit.event.block.Action.RIGHT_CLICK_AIR,
                 org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK -> {
-                    val player = event.player
+
                     // ブレイズロッドの右クリックが検知された場合の処理
                     if (player.inventory.helmet?.type != Material.PLAYER_HEAD) {
                         val meta = item.itemMeta ?: return

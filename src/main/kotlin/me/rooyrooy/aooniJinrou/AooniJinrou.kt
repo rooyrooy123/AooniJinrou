@@ -36,6 +36,7 @@ import java.util.*
 
 //初期設定
 val jobList = arrayListOf("AOONI","HUNTER","HIROSHI","MIKA","TAKESHI","TAKUROU") //mika 狂人 //takeshi 妖狐 // takurou てるてる
+var gameJobCount : MutableMap<String,Int> = mutableMapOf()
 var gameStart : Boolean = true
 var gamePlayerChestOpened : ArrayList<String> = arrayListOf()
 var gameChestEquipment : MutableMap<String, Material> = mutableMapOf()
@@ -43,15 +44,18 @@ var gameChestIDCount = 0
 var gameChestID : MutableMap<Int,Block> = mutableMapOf()
 val gameAreaEffectCloudDurationSpeed : MutableMap<UUID,Int> = mutableMapOf()
 var gameJobList : MutableMap<Player,String> = mutableMapOf()
+val gameJobPlayerList : MutableMap<String,MutableList<Player>> = mutableMapOf()
 var gameKeyUnderNeed = 0
 var gameKeyTopNeed = 0
 var gameChestCount : MutableMap<Int,Int> = mutableMapOf()
 //var gameChestFloor : MutableMap<BlockState,String> = mutableMapOf()
 var gameWorld = Bukkit.getWorld("world")
 var gameTime = 0
+var gameLobby = Location(gameWorld,0.0,0.0,0.0)
 var gameKeyPlateSilver = Location(gameWorld,0.0,0.0,0.0)
 var gameAooniKillCount : MutableMap<Player,Int> = mutableMapOf()
 var gameAooniKillLimit : MutableMap<Player,Int> = mutableMapOf()
+var gameStartLocation = Location(gameWorld , 0.0,0.0,0.0)
 var gameGateUnderFloor = Location(gameWorld , 0.0,0.0,0.0)
 var gameGateTopFloor = Location(gameWorld , 0.0,0.0,0.0)
 var gameSignEntrance = Location(gameWorld,0.0,0.0,0.0) //玄関看板
@@ -59,9 +63,16 @@ var gameSignEntranceTeleport = Location(gameWorld,0.0,0.0,0.0) //玄関看板TP�
 var gameSignEscape = Location(gameWorld,0.0,0.0,0.0) //脱出看板
 var gameSignEntranceReturn = Location(gameWorld,0.0,0.0,0.0)
 var gameHideBallCount : MutableMap<Player,Int> = mutableMapOf()
+var gameJoinGame : MutableMap<Player,Boolean> = mutableMapOf()
+
 class AooniJinrou : JavaPlugin() {
     private lateinit var chestLocations: Map<String, List<List<Int>>>
     private lateinit var protocolManager: ProtocolManager
+    companion object {
+        // プラグインの唯一のインスタンスを保持する変数
+        lateinit var instance: AooniJinrou
+            private set // 外部からの書き換えを防ぐ
+    }
     override fun onEnable() {
         // Plugin startup logic
         saveDefaultConfig()
@@ -72,11 +83,12 @@ class AooniJinrou : JavaPlugin() {
         server.pluginManager.registerEvents(Key(), this)
         server.pluginManager.registerEvents(HideBall(), this)
         server.pluginManager.registerEvents(OnChat(),this)
+        server.pluginManager.registerEvents(Start(), this)
         protocolManager = ProtocolLibrary.getProtocolManager()
-
+        instance = this
         PluginInstance.plugin = this
-
-
+        Reset().reset {  }
+        /*
         //リセ時の処理
         val worldString = config.getString("AooniJinrou.Setting.Game.World") ?: "world"
         gameWorld = Bukkit.getWorld(worldString)
@@ -84,13 +96,25 @@ class AooniJinrou : JavaPlugin() {
 
         // ちぇすとのplaceLocationデータを抽出
         chestLocations = ChestExtractLocations().getLocations(config)
-        gameGateUnderFloor =  getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Gate.UnderFloor")
-        gameGateTopFloor =  getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Gate.TopFloor")
-        gameKeyPlateSilver = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Plate.SilverKey")
-        gameSignEntrance = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Entrance.Block")
-        gameSignEntranceTeleport = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Entrance.Teleport")
-        gameSignEscape = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Escape")
-        gameSignEntranceReturn = getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Entrance.Return")
+        gameStartLocation =  Expressions().getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Start")
+
+        gameGateUnderFloor =  Expressions().getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Gate.UnderFloor")
+        gameGateTopFloor =  Expressions().getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Gate.TopFloor")
+        gameKeyPlateSilver = Expressions().getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Plate.SilverKey")
+        gameSignEntrance = Expressions().getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Entrance.Block")
+        gameSignEntranceTeleport = Expressions().getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Entrance.Teleport")
+        gameSignEscape = Expressions().getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Escape")
+        gameSignEntranceReturn = Expressions().getLocationFromCoordinate("AooniJinrou.Location.${gameWorld?.name}.Sign.Entrance.Return")
+        gameLobby = Expressions().getSpawnLocationFromConfig()
+        val jobSection = config.getConfigurationSection("AooniJinrou.Setting.Job")
+        val jobMutableMap: MutableMap<String, Int> = jobSection?.getValues(false)
+            ?.filterValues { it is Int }
+            ?.mapValues { it.value as Int }
+            ?.toMutableMap()
+            ?: mutableMapOf()
+        gameJobCount = jobMutableMap
+
+
         Sign(gameSignEntrance).setSignText(arrayListOf(
             "§b§l看板右クリックで",
             "§b§l館の外に出る。",
@@ -123,49 +147,17 @@ class AooniJinrou : JavaPlugin() {
         val kanji = IMEConverter.convByGoogleIME(jp)
         broadcastMessage(kanji)
 
+         */
 
 
-    }
-    private fun getLocationFromCoordinate(path: String): Location {
-        val coordinateList = config.getList(path)
-        val doubleList: List<Double>? = coordinateList?.mapNotNull {
-            when (it) {
-                is Number -> it.toDouble()
-                is String -> it.toDoubleOrNull()
-                else -> null
-            }
-        }
-        if (doubleList != null && doubleList.size >= 3) {
-            val location = Location(gameWorld, doubleList[0], doubleList[1], doubleList[2])
-            return location
-        }else{
-            return Location(gameWorld, 0.0, 64.0, 0.0)
-        }
 
     }
+
     // リスト形式の座標を取得
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String> ): Boolean {
 
-        if (cmd.name.equals("armorstand", ignoreCase = true)) { // #/shop items
-            var testStand: PacketStand? = null
-            var realStand: ArmorStand? = null
-            var serializedString: String = ""
-            val player = Bukkit.getPlayer(sender.name) ?: return false
-            val location = player.location
-            sender.sendMessage("stand spawned!")
-            testStand = PacketStand(location , "StandAPI_test")
-            sender.sendMessage("stand metadata sent")
-            //testStand!!.setGlowingEffect(true)
-            //testStand!!.setArms(true)
-            testStand.setSmall(true)
-            testStand.setBaseplate(false)
-            testStand.setCustomNameVisible(true)
-            testStand.setCustomName("test name")
-            testStand.setVisible(false)
-            testStand.toRealStand()
 
-        }
         if (cmd.name.equals("aoonijinrou-chest-place-all", ignoreCase = true)){ // #/shop items
             //ChestPlace(config).placeAll()
             Chest().placeAll(chestLocations)
@@ -178,7 +170,7 @@ class AooniJinrou : JavaPlugin() {
             return true
         }*/
         if (cmd.name.equals("aoonijinrou-start", ignoreCase = true)){ //
-            Start(gameWorld!!)
+            Start().start()
             Bukkit.broadcastMessage("start")
             return true
         }
@@ -197,6 +189,13 @@ class AooniJinrou : JavaPlugin() {
             JobGive().set(player,args[1])
             return true
         }
+        if (cmd.name.equals("aoonijinrou-join", ignoreCase = true)){
+            if (args.size != 1) return false
+            val player = Bukkit.getPlayer(args[0]) ?: return false
+            Start().gameJoin(player,true)
+            return true
+        }
+
         if (cmd.name.equals("aoonijinrou-setting-chest-place", ignoreCase = true)){
             if (args.size != 1) return false
             val player = Bukkit.getPlayer(sender.name) ?: return false

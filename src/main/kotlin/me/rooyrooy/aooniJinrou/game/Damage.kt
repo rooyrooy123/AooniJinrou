@@ -138,9 +138,13 @@ class Damage: Listener{
             // すべてのエンティティをチェック
             for (entity in entities) {
                 if (entity is ArmorStand && entity.isMarker) {
-                    // エンティティの位置と現在の座標の距離をチェック
-                    if (entity.location.distanceSquared(point) < hitBox * hitBox) {
-                        return entity
+                    val tags = entity.scoreboardTags
+
+                    if (tags.contains("death")) {
+                        // エンティティの位置と現在の座標の距離をチェック
+                        if (entity.location.distanceSquared(point) < hitBox * hitBox) {
+                            return entity
+                        }
                     }
                 }
             }
@@ -167,6 +171,7 @@ class Damage: Listener{
         val tags = nbtEntity.getStringList("Tags") ?: mutableListOf()
         tags.add(player.name)
         tags.add("death")
+        tags.add("AooniJinrou")
         nbtEntity.setObject("Tags", tags)
         // プレイヤーの頭を装備
         val skullItem = ItemStack(org.bukkit.Material.PLAYER_HEAD)

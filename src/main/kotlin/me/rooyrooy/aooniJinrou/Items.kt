@@ -1,11 +1,42 @@
 package me.rooyrooy.aooniJinrou
 
+import de.tr7zw.nbtapi.NBTItem
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.command.ConsoleCommandSender
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 
-enum class Items(private val displayName: String, private val lore: List<String>, private val material: Material) {
+enum class Items(private val displayName: String,
+                 private val lore: List<String>,
+                 private val material: Material,
+                 private val canPlaceOn: List<String>? = null, //CanPlaceOnいらなければ入力しなければいい
+                 private val additionalInfo: (ItemStack) -> Unit = {} // ラムダ式
+    ) {
+    BOW("§c§l狩人の§2§l弓",
+        listOf("§c誰でも一撃で撃破できる。§8(卓郎を除く)",
+            "§7一度使用するとクールタイムが入ります。",
+            "§7クールタイム中は走れません。",
+            "§7なお、ひろしを射抜くと" ,
+            "§7チェストのもやもや時間半減と盲目を受ける。"),
+        Material.BOW,
+        additionalInfo = { item ->
+            val meta = item.itemMeta
+            meta?.isUnbreakable = true
+            item.itemMeta = meta
+        }),
+
+    ARROW("§c§l狩人の§2§l矢",
+        listOf("矢です。はい。それだけ"),
+        Material.ARROW,),
+    ARROW_STACK("§c§l狩人の§2§l矢",
+        listOf("矢です。はい。それだけ"),
+        Material.ARROW,
+        additionalInfo = { item ->
+            item.amount = 64
+        }),
     HIDEBALL("§f[§9§l§n隠し玉§f]§b§l手に持つと§f§l透明化",
         listOf("§c§l手に持つだけで、§f§l透明化します。",
             "§7別スロットに解除用アイテムが付与されるので、",
@@ -47,9 +78,18 @@ enum class Items(private val displayName: String, private val lore: List<String>
     KEY_WARNING_ALREADY("§4§l※§cここの§e鍵の欠片§cは取得済みです",
         listOf("§7未開封のチェストに鍵の欠片があります"),
         Material.STRUCTURE_VOID),
+    KEY_UNDERFLOOR("§e§l§n地下室の鍵",
+        listOf("§7地下室解放可能時刻を過ぎると、設置可能に"),
+        Material.OAK_PRESSURE_PLATE,
+        listOf("minecraft:obsidian")),
+    KEY_TOPFLOOR("§9§l§n最上階の鍵",
+        listOf("§7最上階地下室解放可能時刻を過ぎると、設置可能に"),
+        Material.BLUE_WOOL,
+        listOf("minecraft:gold_block")),
     EQUIPMENT_WARNING("§4§l装備取得不可",
         listOf("§7もやもやはある間は装備の取得不可"),
         Material.STRUCTURE_VOID);
+
 
 
     // ItemStackを作成するメソッド
@@ -59,6 +99,17 @@ enum class Items(private val displayName: String, private val lore: List<String>
             meta.displayName(Component.text(displayName)) // 名前を設定
             meta.lore(lore.map { Component.text(it) }) // lore を String から Component に変換
         }
+        // 必要に応じてNBTタグを追加
+        if (canPlaceOn != null) {
+            val nbtItem = NBTItem(item) // NBTItemを作成
+            val canPlaceOnList = nbtItem.getStringList("CanPlaceOn")
+            canPlaceOnList.addAll(canPlaceOn) // NBTのCanPlaceOnリストに追加
+            return nbtItem.item // NBTを反映したItemStackを返す
+        }
+        // ラムダ式を適用して追加情報を設定
+        additionalInfo(item)
+
         return item
     }
+
 }

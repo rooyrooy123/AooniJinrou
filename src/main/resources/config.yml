@@ -10,15 +10,22 @@ AooniJinrou:
       Time: 1200
       World: world
     HideBall: #隠し玉 tick数
-      Aooni: 600
+      AOONI: 600
       HIROSHI: 300
       MIKA: 300
       TAKESHI: 300
       TAKUROU: 300
   Location:
+    Lobby:
+      world: "lobby"
+      x: 384.5
+      y: 9.0
+      z: 517.5
+      yaw: 135.0
+      pitch: 0.0
     world:
       Start:
-        [50,64,50]
+        [250, 58, 73]
       Gate:
         UnderFloor:
           [280, 57, 89]

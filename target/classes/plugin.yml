@@ -18,5 +18,5 @@ commands:
     usage: <command> <true/false>チェスト設置場所の発光のON/OFF
   aoonijinrou-chest-place-all:
     usage: <command>
-  armorstand:
-    usage: <command>
+  aoonijinrou-join:
+    usage: <command> <player>
